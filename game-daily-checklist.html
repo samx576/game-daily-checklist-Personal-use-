@@ -290,6 +290,13 @@
       margin-top: 4px;
     }
 
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: end;
+    }
+
     button {
       border: 0;
       border-radius: 8px;
@@ -581,7 +588,7 @@
         </div>
       </div>
       <div class="date-box">
-        <span>今天</span>
+        <span>裝置日期</span>
         <strong id="todayLabel"></strong>
       </div>
     </header>
@@ -595,6 +602,10 @@
             <label for="gameName">遊戲名稱</label>
             <input id="gameName" autocomplete="off" placeholder="例如：原神、星穹鐵道、FGO" required>
           </div>
+          <div>
+            <label for="resetTime">每日重置時間</label>
+            <input id="resetTime" type="time" value="00:00">
+          </div>
           <div class="check-group">
             <label>固定付費標記</label>
             <label class="check-line">
@@ -605,6 +616,13 @@
               <input type="checkbox" id="hasBattlePass">
               有通行證
             </label>
+          </div>
+          <div>
+            <label for="monthlyCardEndDate">月卡到期日</label>
+            <div class="field-row">
+              <input id="monthlyCardEndDate" type="date">
+              <button class="secondary" type="button" id="buyMonthlyCardButton">今天購買 +30 天</button>
+            </div>
           </div>
           <div>
             <label for="versionName">版本名稱</label>
@@ -621,6 +639,10 @@
           <div>
             <label for="bannerEndDate">卡池結束日</label>
             <input id="bannerEndDate" type="date">
+          </div>
+          <div>
+            <label for="bannerEndTime">卡池結束時間</label>
+            <input id="bannerEndTime" type="time" value="23:59">
           </div>
           <div>
             <label for="dailyTasks">每日任務</label>
@@ -767,6 +789,41 @@
       return `${current.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
     }
 
+    function parseResetTime(value) {
+      const match = /^(\d{2}):(\d{2})$/.exec(value || "");
+      if (!match) return { hours: 0, minutes: 0, value: "00:00" };
+      const hours = Math.min(23, Math.max(0, Number(match[1])));
+      const minutes = Math.min(59, Math.max(0, Number(match[2])));
+      return {
+        hours,
+        minutes,
+        value: `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`
+      };
+    }
+
+    function gameCycleDate(game, now = new Date()) {
+      const reset = parseResetTime(game.resetTime);
+      const cycle = new Date(now);
+      const resetToday = new Date(now);
+      resetToday.setHours(reset.hours, reset.minutes, 0, 0);
+      if (now < resetToday) cycle.setDate(cycle.getDate() - 1);
+      return cycle;
+    }
+
+    function gameCycleDateKey(game) {
+      return gameCycleDate(game).toLocaleDateString("sv-SE");
+    }
+
+    function gameWeekKey(game) {
+      return getWeekKey(gameCycleDate(game));
+    }
+
+    function addDaysToToday(days) {
+      const date = new Date(`${state.today}T00:00:00`);
+      date.setDate(date.getDate() + days);
+      return date.toLocaleDateString("sv-SE");
+    }
+
     function normalizeGame(game) {
       if (game.dailyTasks === undefined && game.weeklyTasks === undefined) {
         if (game.frequency === "weekly") {
@@ -779,22 +836,25 @@
       }
       game.dailyTasks = game.dailyTasks || "";
       game.weeklyTasks = game.weeklyTasks || "";
+      game.resetTime = parseResetTime(game.resetTime).value;
       game.hasMonthlyCard = Boolean(game.hasMonthlyCard);
       game.hasBattlePass = Boolean(game.hasBattlePass);
+      game.monthlyCardEndDate = game.monthlyCardEndDate || "";
       game.versionName = game.versionName || "";
       game.versionEndDate = game.versionEndDate || "";
       game.bannerName = game.bannerName || "";
       game.bannerEndDate = game.bannerEndDate || "";
+      game.bannerEndTime = parseResetTime(game.bannerEndTime || "23:59").value;
       game.completedDates = Array.isArray(game.completedDates) ? game.completedDates : [];
       return game;
     }
 
-    function completionKey(type) {
-      return type === "weekly" ? `W:${state.week}` : `D:${state.today}`;
+    function completionKey(game, type) {
+      return type === "weekly" ? `W:${gameWeekKey(game)}` : `D:${gameCycleDateKey(game)}`;
     }
 
-    function legacyCompletionKey(type) {
-      return type === "weekly" ? state.week : state.today;
+    function legacyCompletionKey(game, type) {
+      return type === "weekly" ? gameWeekKey(game) : gameCycleDateKey(game);
     }
 
     function hasTask(game, type) {
@@ -805,7 +865,7 @@
     function isTaskDone(game, type) {
       if (!hasTask(game, type)) return true;
       const completions = Array.isArray(game.completedDates) ? game.completedDates : [];
-      return completions.includes(completionKey(type)) || completions.includes(legacyCompletionKey(type));
+      return completions.includes(completionKey(game, type)) || completions.includes(legacyCompletionKey(game, type));
     }
 
     function isGameDone(game) {
@@ -848,8 +908,32 @@
       return `已結束 ${Math.abs(days)} 天`;
     }
 
+    function timeUntil(dateText, timeText) {
+      if (!dateText) return "";
+      const time = parseResetTime(timeText || "23:59").value;
+      const target = new Date(`${dateText}T${time}:00`);
+      if (Number.isNaN(target.getTime())) return "";
+      const diff = target - new Date();
+      const abs = Math.abs(diff);
+      const days = Math.floor(abs / 86400000);
+      const hours = Math.floor((abs % 86400000) / 3600000);
+      const minutes = Math.floor((abs % 3600000) / 60000);
+      const detail = days > 0
+        ? `${days} 天 ${hours} 小時`
+        : hours > 0
+          ? `${hours} 小時 ${minutes} 分`
+          : `${minutes} 分`;
+      if (diff > 0) return `剩 ${detail}`;
+      if (diff === 0) return "現在結束";
+      return `已結束 ${detail}`;
+    }
+
     function infoLines(game) {
       const lines = [];
+      if (game.hasMonthlyCard || game.monthlyCardEndDate) {
+        const remain = daysUntil(game.monthlyCardEndDate);
+        lines.push(`<div><strong>月卡：</strong>${remain || "未填到期日"}</div>`);
+      }
       if (game.versionName || game.versionEndDate) {
         const left = game.versionName ? escapeHtml(game.versionName) : "未填版本";
         const remain = daysUntil(game.versionEndDate);
@@ -857,21 +941,27 @@
       }
       if (game.bannerName || game.bannerEndDate) {
         const left = game.bannerName ? escapeHtml(game.bannerName) : "未填卡池";
-        const remain = daysUntil(game.bannerEndDate);
-        lines.push(`<div><strong>卡池：</strong>${left}${remain ? `，${remain}` : ""}</div>`);
+        const remain = timeUntil(game.bannerEndDate, game.bannerEndTime);
+        const endTime = game.bannerEndDate ? `（${parseResetTime(game.bannerEndTime).value}）` : "";
+        lines.push(`<div><strong>卡池：</strong>${left}${remain ? `，${remain}${endTime}` : ""}</div>`);
       }
       return lines.length ? `<div class="info-lines">${lines.join("")}</div>` : "";
     }
 
     function plainInfoLines(game) {
       const lines = [];
+      if (game.hasMonthlyCard || game.monthlyCardEndDate) {
+        const remain = daysUntil(game.monthlyCardEndDate);
+        lines.push(`月卡：${remain || "未填到期日"}`);
+      }
       if (game.versionName || game.versionEndDate) {
         const remain = daysUntil(game.versionEndDate);
         lines.push(`版本：${game.versionName || "未填版本"}${remain ? `，${remain}` : ""}`);
       }
       if (game.bannerName || game.bannerEndDate) {
-        const remain = daysUntil(game.bannerEndDate);
-        lines.push(`卡池：${game.bannerName || "未填卡池"}${remain ? `，${remain}` : ""}`);
+        const remain = timeUntil(game.bannerEndDate, game.bannerEndTime);
+        const endTime = game.bannerEndDate ? `（${parseResetTime(game.bannerEndTime).value}）` : "";
+        lines.push(`卡池：${game.bannerName || "未填卡池"}${remain ? `，${remain}${endTime}` : ""}`);
       }
       return lines;
     }
@@ -1070,8 +1160,8 @@
       if (!game) return;
 
       game.completedDates = Array.isArray(game.completedDates) ? game.completedDates : [];
-      const key = completionKey(type);
-      const legacyKey = legacyCompletionKey(type);
+      const key = completionKey(game, type);
+      const legacyKey = legacyCompletionKey(game, type);
       if (done && !game.completedDates.includes(key)) {
         game.completedDates.push(key);
       }
@@ -1151,6 +1241,7 @@
               </div>
               ${infoLines(game)}
               <div class="meta">
+                <span class="tag">重置 ${parseResetTime(game.resetTime).value}</span>
                 ${pendingLabels(game).map((tag) => `<span class="tag">${tag}</span>`).join("")}
                 ${paidTags(game).map((tag) => `<span class="tag">${tag}</span>`).join("")}
                 ${game.updatedAt ? `<span class="tag">更新：${escapeHtml(game.updatedAt)}</span>` : ""}
@@ -1168,12 +1259,15 @@
     function resetForm() {
       $("#editingId").value = "";
       $("#gameName").value = "";
+      $("#resetTime").value = "00:00";
       $("#hasMonthlyCard").checked = false;
       $("#hasBattlePass").checked = false;
+      $("#monthlyCardEndDate").value = "";
       $("#versionName").value = "";
       $("#versionEndDate").value = "";
       $("#bannerName").value = "";
       $("#bannerEndDate").value = "";
+      $("#bannerEndTime").value = "23:59";
       $("#dailyTasks").value = "";
       $("#weeklyTasks").value = "";
       $("#formTitle").textContent = "新增遊戲";
@@ -1185,12 +1279,15 @@
       event.preventDefault();
       const id = $("#editingId").value;
       const name = $("#gameName").value.trim();
+      const resetTime = parseResetTime($("#resetTime").value).value;
       const hasMonthlyCard = $("#hasMonthlyCard").checked;
       const hasBattlePass = $("#hasBattlePass").checked;
+      const monthlyCardEndDate = $("#monthlyCardEndDate").value;
       const versionName = $("#versionName").value.trim();
       const versionEndDate = $("#versionEndDate").value;
       const bannerName = $("#bannerName").value.trim();
       const bannerEndDate = $("#bannerEndDate").value;
+      const bannerEndTime = parseResetTime($("#bannerEndTime").value || "23:59").value;
       const dailyTasks = $("#dailyTasks").value.trim();
       const weeklyTasks = $("#weeklyTasks").value.trim();
       if (!name) return;
@@ -1199,12 +1296,15 @@
         const game = state.games.find((item) => item.id === id);
         if (game) {
           game.name = name;
+          game.resetTime = resetTime;
           game.hasMonthlyCard = hasMonthlyCard;
           game.hasBattlePass = hasBattlePass;
+          game.monthlyCardEndDate = monthlyCardEndDate;
           game.versionName = versionName;
           game.versionEndDate = versionEndDate;
           game.bannerName = bannerName;
           game.bannerEndDate = bannerEndDate;
+          game.bannerEndTime = bannerEndTime;
           game.dailyTasks = dailyTasks;
           game.weeklyTasks = weeklyTasks;
           game.updatedAt = state.today;
@@ -1214,12 +1314,15 @@
         state.games.push({
           id: crypto.randomUUID(),
           name,
+          resetTime,
           hasMonthlyCard,
           hasBattlePass,
+          monthlyCardEndDate,
           versionName,
           versionEndDate,
           bannerName,
           bannerEndDate,
+          bannerEndTime,
           dailyTasks,
           weeklyTasks,
           completedDates: [],
@@ -1257,12 +1360,15 @@
       if (action === "edit") {
         $("#editingId").value = game.id;
         $("#gameName").value = game.name;
+        $("#resetTime").value = parseResetTime(game.resetTime).value;
         $("#hasMonthlyCard").checked = Boolean(game.hasMonthlyCard);
         $("#hasBattlePass").checked = Boolean(game.hasBattlePass);
+        $("#monthlyCardEndDate").value = game.monthlyCardEndDate || "";
         $("#versionName").value = game.versionName || "";
         $("#versionEndDate").value = game.versionEndDate || "";
         $("#bannerName").value = game.bannerName || "";
         $("#bannerEndDate").value = game.bannerEndDate || "";
+        $("#bannerEndTime").value = parseResetTime(game.bannerEndTime || "23:59").value;
         $("#dailyTasks").value = game.dailyTasks || "";
         $("#weeklyTasks").value = game.weeklyTasks || "";
         $("#formTitle").textContent = "編輯遊戲";
@@ -1290,15 +1396,21 @@
       saveTheme(event.target.value);
     });
 
+    $("#buyMonthlyCardButton").addEventListener("click", () => {
+      $("#hasMonthlyCard").checked = true;
+      $("#monthlyCardEndDate").value = addDaysToToday(30);
+      showToast("已填入月卡到期日");
+    });
+
     $("#cancelEditButton").addEventListener("click", resetForm);
 
     $("#resetCurrentButton").addEventListener("click", () => {
       state.games.forEach((game) => {
         const keys = [
-          completionKey("daily"),
-          completionKey("weekly"),
-          legacyCompletionKey("daily"),
-          legacyCompletionKey("weekly")
+          completionKey(game, "daily"),
+          completionKey(game, "weekly"),
+          legacyCompletionKey(game, "daily"),
+          legacyCompletionKey(game, "weekly")
         ];
         game.completedDates = (game.completedDates || []).filter((date) => !keys.includes(date));
       });
