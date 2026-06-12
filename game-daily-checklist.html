@@ -137,6 +137,26 @@
       margin: -4px 0 4px;
     }
 
+    .check-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .check-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .check-line input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
     .actions {
       display: flex;
       gap: 8px;
@@ -269,6 +289,19 @@
       padding: 4px 8px;
     }
 
+    .info-lines {
+      display: grid;
+      gap: 4px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .info-lines strong {
+      color: var(--text);
+    }
+
     .row-actions {
       display: flex;
       gap: 7px;
@@ -392,6 +425,33 @@
               <option value="weekly">每週（週一重置）</option>
             </select>
           </div>
+          <div class="check-group">
+            <label>固定付費標記</label>
+            <label class="check-line">
+              <input type="checkbox" id="hasMonthlyCard">
+              有月卡
+            </label>
+            <label class="check-line">
+              <input type="checkbox" id="hasBattlePass">
+              有通行證
+            </label>
+          </div>
+          <div>
+            <label for="versionName">版本名稱</label>
+            <input id="versionName" autocomplete="off" placeholder="例如：2.3 下半、夏日活動">
+          </div>
+          <div>
+            <label for="versionEndDate">版本結束日</label>
+            <input id="versionEndDate" type="date">
+          </div>
+          <div>
+            <label for="bannerName">目前卡池</label>
+            <input id="bannerName" autocomplete="off" placeholder="例如：角色 A / 角色 B">
+          </div>
+          <div>
+            <label for="bannerEndDate">卡池結束日</label>
+            <input id="bannerEndDate" type="date">
+          </div>
           <div>
             <label for="taskText">要做什麼</label>
             <textarea id="taskText" placeholder="例如：
@@ -484,6 +544,12 @@
 
     function normalizeGame(game) {
       game.frequency = game.frequency === "weekly" ? "weekly" : "daily";
+      game.hasMonthlyCard = Boolean(game.hasMonthlyCard);
+      game.hasBattlePass = Boolean(game.hasBattlePass);
+      game.versionName = game.versionName || "";
+      game.versionEndDate = game.versionEndDate || "";
+      game.bannerName = game.bannerName || "";
+      game.bannerEndDate = game.bannerEndDate || "";
       game.completedDates = Array.isArray(game.completedDates) ? game.completedDates : [];
       return game;
     }
@@ -503,6 +569,52 @@
     function statusLabel(game, done) {
       if (game.frequency === "weekly") return done ? "本週已完成" : "本週未完成";
       return done ? "今天已完成" : "今天未完成";
+    }
+
+    function paidTags(game) {
+      const tags = [];
+      if (game.hasMonthlyCard) tags.push("月卡");
+      if (game.hasBattlePass) tags.push("通行證");
+      return tags;
+    }
+
+    function daysUntil(dateText) {
+      if (!dateText) return "";
+      const target = new Date(`${dateText}T00:00:00`);
+      if (Number.isNaN(target.getTime())) return "";
+      const today = new Date(`${state.today}T00:00:00`);
+      const days = Math.ceil((target - today) / 86400000);
+      if (days > 0) return `剩 ${days} 天`;
+      if (days === 0) return "今天結束";
+      return `已結束 ${Math.abs(days)} 天`;
+    }
+
+    function infoLines(game) {
+      const lines = [];
+      if (game.versionName || game.versionEndDate) {
+        const left = game.versionName ? escapeHtml(game.versionName) : "未填版本";
+        const remain = daysUntil(game.versionEndDate);
+        lines.push(`<div><strong>版本：</strong>${left}${remain ? `，${remain}` : ""}</div>`);
+      }
+      if (game.bannerName || game.bannerEndDate) {
+        const left = game.bannerName ? escapeHtml(game.bannerName) : "未填卡池";
+        const remain = daysUntil(game.bannerEndDate);
+        lines.push(`<div><strong>卡池：</strong>${left}${remain ? `，${remain}` : ""}</div>`);
+      }
+      return lines.length ? `<div class="info-lines">${lines.join("")}</div>` : "";
+    }
+
+    function plainInfoLines(game) {
+      const lines = [];
+      if (game.versionName || game.versionEndDate) {
+        const remain = daysUntil(game.versionEndDate);
+        lines.push(`版本：${game.versionName || "未填版本"}${remain ? `，${remain}` : ""}`);
+      }
+      if (game.bannerName || game.bannerEndDate) {
+        const remain = daysUntil(game.bannerEndDate);
+        lines.push(`卡池：${game.bannerName || "未填卡池"}${remain ? `，${remain}` : ""}`);
+      }
+      return lines;
     }
 
     function load() {
@@ -726,9 +838,11 @@
             <div>
               <div class="game-name">${escapeHtml(game.name)}</div>
               <div class="tasks">${escapeHtml(tasks)}</div>
+              ${infoLines(game)}
               <div class="meta">
                 <span class="tag">${frequencyLabel(game)}</span>
                 <span class="tag">${statusLabel(game, done)}</span>
+                ${paidTags(game).map((tag) => `<span class="tag">${tag}</span>`).join("")}
                 ${game.updatedAt ? `<span class="tag">更新：${escapeHtml(game.updatedAt)}</span>` : ""}
               </div>
             </div>
@@ -745,6 +859,12 @@
       $("#editingId").value = "";
       $("#gameName").value = "";
       $("#frequency").value = "daily";
+      $("#hasMonthlyCard").checked = false;
+      $("#hasBattlePass").checked = false;
+      $("#versionName").value = "";
+      $("#versionEndDate").value = "";
+      $("#bannerName").value = "";
+      $("#bannerEndDate").value = "";
       $("#taskText").value = "";
       $("#formTitle").textContent = "新增遊戲";
       $("#saveButton").textContent = "加入清單";
@@ -756,6 +876,12 @@
       const id = $("#editingId").value;
       const name = $("#gameName").value.trim();
       const frequency = $("#frequency").value === "weekly" ? "weekly" : "daily";
+      const hasMonthlyCard = $("#hasMonthlyCard").checked;
+      const hasBattlePass = $("#hasBattlePass").checked;
+      const versionName = $("#versionName").value.trim();
+      const versionEndDate = $("#versionEndDate").value;
+      const bannerName = $("#bannerName").value.trim();
+      const bannerEndDate = $("#bannerEndDate").value;
       const tasks = $("#taskText").value.trim();
       if (!name) return;
 
@@ -764,6 +890,12 @@
         if (game) {
           game.name = name;
           game.frequency = frequency;
+          game.hasMonthlyCard = hasMonthlyCard;
+          game.hasBattlePass = hasBattlePass;
+          game.versionName = versionName;
+          game.versionEndDate = versionEndDate;
+          game.bannerName = bannerName;
+          game.bannerEndDate = bannerEndDate;
           game.tasks = tasks;
           game.updatedAt = state.today;
           showToast("已更新遊戲");
@@ -773,6 +905,12 @@
           id: crypto.randomUUID(),
           name,
           frequency,
+          hasMonthlyCard,
+          hasBattlePass,
+          versionName,
+          versionEndDate,
+          bannerName,
+          bannerEndDate,
           tasks,
           completedDates: [],
           updatedAt: state.today
@@ -802,6 +940,12 @@
         $("#editingId").value = game.id;
         $("#gameName").value = game.name;
         $("#frequency").value = game.frequency === "weekly" ? "weekly" : "daily";
+        $("#hasMonthlyCard").checked = Boolean(game.hasMonthlyCard);
+        $("#hasBattlePass").checked = Boolean(game.hasBattlePass);
+        $("#versionName").value = game.versionName || "";
+        $("#versionEndDate").value = game.versionEndDate || "";
+        $("#bannerName").value = game.bannerName || "";
+        $("#bannerEndDate").value = game.bannerEndDate || "";
         $("#taskText").value = game.tasks || "";
         $("#formTitle").textContent = "編輯遊戲";
         $("#saveButton").textContent = "儲存變更";
@@ -849,7 +993,11 @@
     $("#copyTodoButton").addEventListener("click", async () => {
       const todoGames = state.games.filter((game) => !isDone(game));
       const text = todoGames.length
-        ? `目前還沒完成的遊戲任務：\n${todoGames.map((game) => `- [${frequencyLabel(game)}] ${game.name}${game.tasks ? `\n  ${game.tasks.split("\n").join("\n  ")}` : ""}`).join("\n")}`
+        ? `目前還沒完成的遊戲任務：\n${todoGames.map((game) => {
+          const extraLines = plainInfoLines(game);
+          const taskLines = game.tasks ? game.tasks.split("\n") : [];
+          return `- [${[frequencyLabel(game), ...paidTags(game)].join(" / ")}] ${game.name}${[...extraLines, ...taskLines].length ? `\n  ${[...extraLines, ...taskLines].join("\n  ")}` : ""}`;
+        }).join("\n")}`
         : "目前的遊戲任務都完成了。";
 
       try {
