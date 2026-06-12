@@ -8,6 +8,7 @@
     :root {
       color-scheme: light;
       --bg: #f6f7fb;
+      --bg-layer: linear-gradient(135deg, rgba(47, 111, 237, 0.06), rgba(22, 138, 87, 0.04));
       --panel: #ffffff;
       --text: #1c2230;
       --muted: #687086;
@@ -18,6 +19,62 @@
       --warn: #c45f16;
       --danger: #c23939;
       --shadow: 0 12px 30px rgba(31, 42, 68, 0.08);
+      --decor: rgba(47, 111, 237, 0.16);
+      --decor-strong: rgba(47, 111, 237, 0.34);
+    }
+
+    body[data-theme="night"] {
+      color-scheme: dark;
+      --bg: #101421;
+      --bg-layer:
+        radial-gradient(circle at 18% 18%, rgba(69, 115, 255, 0.22), transparent 28%),
+        linear-gradient(135deg, rgba(21, 27, 45, 0.95), rgba(13, 17, 28, 0.95));
+      --panel: #171d2c;
+      --text: #edf2ff;
+      --muted: #a9b3ca;
+      --line: #2d3548;
+      --accent: #7aa2ff;
+      --accent-dark: #5c86e8;
+      --ok: #55d89b;
+      --warn: #ffb26f;
+      --danger: #ff7777;
+      --shadow: 0 14px 34px rgba(0, 0, 0, 0.32);
+      --decor: rgba(122, 162, 255, 0.18);
+      --decor-strong: rgba(122, 162, 255, 0.42);
+    }
+
+    body[data-theme="sakura"] {
+      --bg: #fff7fb;
+      --bg-layer:
+        radial-gradient(circle at 18% 12%, rgba(255, 166, 202, 0.22), transparent 30%),
+        linear-gradient(135deg, rgba(255, 244, 250, 0.95), rgba(246, 250, 255, 0.95));
+      --accent: #df5f92;
+      --accent-dark: #be4777;
+      --ok: #168a57;
+      --warn: #be5c21;
+      --decor: rgba(223, 95, 146, 0.16);
+      --decor-strong: rgba(223, 95, 146, 0.34);
+    }
+
+    body[data-theme="arcade"] {
+      --bg: #11151f;
+      --bg-layer:
+        linear-gradient(90deg, rgba(58, 255, 214, 0.08) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(58, 255, 214, 0.08) 1px, transparent 1px),
+        radial-gradient(circle at 78% 15%, rgba(255, 73, 205, 0.2), transparent 28%),
+        linear-gradient(135deg, #121625, #0e111b);
+      --panel: #181e2d;
+      --text: #f2f6ff;
+      --muted: #aab4c8;
+      --line: #30394d;
+      --accent: #39e0c4;
+      --accent-dark: #23bca2;
+      --ok: #55d89b;
+      --warn: #ffd166;
+      --danger: #ff6b8a;
+      --shadow: 0 14px 36px rgba(0, 0, 0, 0.34);
+      --decor: rgba(57, 224, 196, 0.18);
+      --decor-strong: rgba(255, 73, 205, 0.36);
     }
 
     * { box-sizing: border-box; }
@@ -25,11 +82,52 @@
     body {
       margin: 0;
       font-family: "Segoe UI", "Microsoft JhengHei", system-ui, sans-serif;
-      background: var(--bg);
+      background-color: var(--bg);
+      background-image: var(--bg-layer);
+      background-attachment: fixed;
+      background-size: auto, auto, auto, 100% 100%;
       color: var(--text);
+      min-height: 100vh;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::before {
+      width: 180px;
+      height: 180px;
+      right: 28px;
+      top: 120px;
+      border: 2px solid var(--decor);
+      border-radius: 28px;
+      transform: rotate(12deg);
+      box-shadow:
+        -70px 260px 0 -45px var(--decor),
+        -960px 90px 0 -70px var(--decor-strong);
+      opacity: 0.8;
+    }
+
+    body::after {
+      left: 26px;
+      bottom: 34px;
+      width: 140px;
+      height: 84px;
+      border: 2px solid var(--decor-strong);
+      border-radius: 32px;
+      opacity: 0.55;
+      box-shadow:
+        28px 30px 0 -28px var(--decor-strong),
+        88px 30px 0 -28px var(--decor-strong);
     }
 
     main {
+      position: relative;
+      z-index: 1;
       width: min(1100px, calc(100% - 32px));
       margin: 0 auto;
       padding: 28px 0 40px;
@@ -54,6 +152,34 @@
       color: var(--muted);
       margin: 0;
       font-size: 15px;
+    }
+
+    .hero-flair {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .flair-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--panel) 70%, var(--accent) 12%);
+      color: var(--muted);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 800;
+      box-shadow: var(--shadow);
+    }
+
+    .pixel-mark {
+      width: 12px;
+      height: 12px;
+      background: var(--accent);
+      clip-path: polygon(50% 0, 62% 34%, 100% 34%, 70% 56%, 82% 100%, 50% 74%, 18% 100%, 30% 56%, 0 34%, 38% 34%);
     }
 
     .date-box {
@@ -121,7 +247,7 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 10px 12px;
-      background: #fff;
+      background: var(--panel);
       color: var(--text);
     }
 
@@ -177,18 +303,18 @@
     button:hover { background: var(--accent-dark); }
 
     button.secondary {
-      background: #e8ecf5;
+      background: color-mix(in srgb, var(--accent) 12%, var(--panel));
       color: var(--text);
     }
 
-    button.secondary:hover { background: #dbe1ee; }
+    button.secondary:hover { background: color-mix(in srgb, var(--accent) 18%, var(--panel)); }
 
     button.danger {
-      background: #fae7e7;
+      background: color-mix(in srgb, var(--danger) 14%, var(--panel));
       color: var(--danger);
     }
 
-    button.danger:hover { background: #f5d6d6; }
+    button.danger:hover { background: color-mix(in srgb, var(--danger) 20%, var(--panel)); }
 
     .toolbar {
       display: flex;
@@ -208,15 +334,15 @@
 
     .pill {
       border-radius: 999px;
-      background: #eef2fb;
+      background: color-mix(in srgb, var(--accent) 10%, var(--panel));
       color: var(--muted);
       padding: 7px 10px;
       font-size: 13px;
       font-weight: 700;
     }
 
-    .pill.todo { color: var(--warn); background: #fff1e6; }
-    .pill.done { color: var(--ok); background: #e7f6ef; }
+    .pill.todo { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, var(--panel)); }
+    .pill.done { color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, var(--panel)); }
 
     .filters {
       display: flex;
@@ -273,6 +399,53 @@
       overflow-wrap: anywhere;
     }
 
+    .task-sections {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .task-section {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 10px;
+      background: color-mix(in srgb, var(--panel) 84%, var(--accent) 6%);
+    }
+
+    .task-section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 5px;
+    }
+
+    .task-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .task-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .task-toggle input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .task-section.done .tasks {
+      text-decoration: line-through;
+    }
+
     .meta {
       display: flex;
       gap: 8px;
@@ -284,7 +457,7 @@
     .tag {
       font-size: 12px;
       color: var(--muted);
-      background: #f1f3f8;
+      background: color-mix(in srgb, var(--accent) 9%, var(--panel));
       border-radius: 999px;
       padding: 4px 8px;
     }
@@ -313,12 +486,12 @@
       padding: 0;
       display: grid;
       place-items: center;
-      background: #f1f3f8;
+      background: color-mix(in srgb, var(--accent) 10%, var(--panel));
       color: var(--text);
       font-weight: 900;
     }
 
-    .icon-button:hover { background: #e4e8f1; }
+    .icon-button:hover { background: color-mix(in srgb, var(--accent) 16%, var(--panel)); }
     .icon-button.delete { color: var(--danger); }
 
     .done-row .game-name,
@@ -402,6 +575,10 @@
       <div>
         <h1>遊戲每日任務（自用）</h1>
         <p class="subtitle">勾一下今天解完的遊戲，剩下沒解的一眼看清楚。</p>
+        <div class="hero-flair" aria-hidden="true">
+          <span class="flair-chip"><span class="pixel-mark"></span>Quest Log</span>
+          <span class="flair-chip"><span class="pixel-mark"></span>Banner Tracker</span>
+        </div>
       </div>
       <div class="date-box">
         <span>今天</span>
@@ -417,13 +594,6 @@
           <div>
             <label for="gameName">遊戲名稱</label>
             <input id="gameName" autocomplete="off" placeholder="例如：原神、星穹鐵道、FGO" required>
-          </div>
-          <div>
-            <label for="frequency">更新週期</label>
-            <select id="frequency">
-              <option value="daily">每日</option>
-              <option value="weekly">每週（週一重置）</option>
-            </select>
           </div>
           <div class="check-group">
             <label>固定付費標記</label>
@@ -453,13 +623,20 @@
             <input id="bannerEndDate" type="date">
           </div>
           <div>
-            <label for="taskText">要做什麼</label>
-            <textarea id="taskText" placeholder="例如：
+            <label for="dailyTasks">每日任務</label>
+            <textarea id="dailyTasks" placeholder="例如：
 領每日獎勵
 清體力
 公會簽到"></textarea>
           </div>
-          <p class="hint">小提醒：每行一個任務，之後看起來最清楚。</p>
+          <div>
+            <label for="weeklyTasks">每週任務</label>
+            <textarea id="weeklyTasks" placeholder="例如：
+打週王
+週任務獎勵
+活動週次任務"></textarea>
+          </div>
+          <p class="hint">小提醒：每行一個任務，之後看起來最清楚。沒有的欄位可以留空。</p>
           <div class="actions">
             <button type="submit" id="saveButton">加入清單</button>
             <button class="secondary" type="button" id="cancelEditButton" hidden>取消編輯</button>
@@ -473,6 +650,19 @@
         </div>
 
         <div class="sync-box">
+          <h3>外觀設定</h3>
+          <div>
+            <label for="themeSelect">背景主題</label>
+            <select id="themeSelect">
+              <option value="clean">清爽冒險</option>
+              <option value="night">夜間任務</option>
+              <option value="sakura">櫻花輕粉</option>
+              <option value="arcade">電玩霓虹</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="sync-box">
           <h3>雲端同步</h3>
           <p class="hint">使用 GitHub Gist 同步。手機和電腦填同一個 Gist ID，就會共用資料。</p>
           <div>
@@ -482,6 +672,17 @@
           <div>
             <label for="syncGistId">Gist ID</label>
             <input id="syncGistId" autocomplete="off" placeholder="第一次可留空，自動建立">
+          </div>
+          <div class="check-group">
+            <label>同步方式</label>
+            <label class="check-line">
+              <input type="checkbox" id="autoPullOnLoad" checked>
+              開啟網站時自動下載雲端
+            </label>
+            <label class="check-line">
+              <input type="checkbox" id="autoPushOnChange" checked>
+              修改後自動上傳同步
+            </label>
           </div>
           <div class="actions">
             <button class="secondary" type="button" id="saveSyncButton">儲存同步設定</button>
@@ -518,6 +719,7 @@
   <script>
     const STORAGE_KEY = "game-daily-checklist-v1";
     const SYNC_KEY = "game-daily-checklist-sync-v1";
+    const THEME_KEY = "game-daily-checklist-theme-v1";
     const SYNC_FILE = "game-daily-checklist-data.json";
     const $ = (selector) => document.querySelector(selector);
 
@@ -526,12 +728,35 @@
       sync: {
         token: "",
         gistId: "",
-        enabled: false
+        enabled: false,
+        autoPullOnLoad: true,
+        autoPushOnChange: true,
+        lastPulledAt: "",
+        lastPushedAt: ""
       },
       filter: "todo",
+      theme: "clean",
       today: new Date().toLocaleDateString("sv-SE"),
       week: getWeekKey(new Date())
     };
+
+    function loadTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+      state.theme = ["clean", "night", "sakura", "arcade"].includes(saved) ? saved : "clean";
+      applyTheme();
+    }
+
+    function applyTheme() {
+      document.body.dataset.theme = state.theme;
+      const select = $("#themeSelect");
+      if (select) select.value = state.theme;
+    }
+
+    function saveTheme(theme) {
+      state.theme = ["clean", "night", "sakura", "arcade"].includes(theme) ? theme : "clean";
+      localStorage.setItem(THEME_KEY, state.theme);
+      applyTheme();
+    }
 
     function getWeekKey(date) {
       const current = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -543,7 +768,17 @@
     }
 
     function normalizeGame(game) {
-      game.frequency = game.frequency === "weekly" ? "weekly" : "daily";
+      if (game.dailyTasks === undefined && game.weeklyTasks === undefined) {
+        if (game.frequency === "weekly") {
+          game.dailyTasks = "";
+          game.weeklyTasks = game.tasks || "";
+        } else {
+          game.dailyTasks = game.tasks || "";
+          game.weeklyTasks = "";
+        }
+      }
+      game.dailyTasks = game.dailyTasks || "";
+      game.weeklyTasks = game.weeklyTasks || "";
       game.hasMonthlyCard = Boolean(game.hasMonthlyCard);
       game.hasBattlePass = Boolean(game.hasBattlePass);
       game.versionName = game.versionName || "";
@@ -554,21 +789,45 @@
       return game;
     }
 
-    function completionKey(game) {
-      return game.frequency === "weekly" ? `W:${state.week}` : `D:${state.today}`;
+    function completionKey(type) {
+      return type === "weekly" ? `W:${state.week}` : `D:${state.today}`;
     }
 
-    function legacyCompletionKey(game) {
-      return game.frequency === "weekly" ? state.week : state.today;
+    function legacyCompletionKey(type) {
+      return type === "weekly" ? state.week : state.today;
     }
 
-    function frequencyLabel(game) {
-      return game.frequency === "weekly" ? "每週" : "每日";
+    function hasTask(game, type) {
+      const value = type === "weekly" ? game.weeklyTasks : game.dailyTasks;
+      return Boolean(value && value.trim());
     }
 
-    function statusLabel(game, done) {
-      if (game.frequency === "weekly") return done ? "本週已完成" : "本週未完成";
+    function isTaskDone(game, type) {
+      if (!hasTask(game, type)) return true;
+      const completions = Array.isArray(game.completedDates) ? game.completedDates : [];
+      return completions.includes(completionKey(type)) || completions.includes(legacyCompletionKey(type));
+    }
+
+    function isGameDone(game) {
+      return isTaskDone(game, "daily") && isTaskDone(game, "weekly");
+    }
+
+    function hasAnyTask(game) {
+      return hasTask(game, "daily") || hasTask(game, "weekly");
+    }
+
+    function taskStatusLabel(type, done) {
+      if (type === "weekly") return done ? "本週已完成" : "本週未完成";
       return done ? "今天已完成" : "今天未完成";
+    }
+
+    function pendingLabels(game) {
+      const labels = [];
+      if (hasTask(game, "daily") && !isTaskDone(game, "daily")) labels.push("每日未完成");
+      if (hasTask(game, "weekly") && !isTaskDone(game, "weekly")) labels.push("每週未完成");
+      if (!labels.length && hasAnyTask(game)) labels.push("任務已完成");
+      if (!labels.length) labels.push("沒有任務");
+      return labels;
     }
 
     function paidTags(game) {
@@ -649,10 +908,22 @@
         state.sync = {
           token: parsed.token || "",
           gistId: parsed.gistId || "",
-          enabled: Boolean(parsed.token)
+          enabled: Boolean(parsed.token),
+          autoPullOnLoad: parsed.autoPullOnLoad !== false,
+          autoPushOnChange: parsed.autoPushOnChange !== false,
+          lastPulledAt: parsed.lastPulledAt || "",
+          lastPushedAt: parsed.lastPushedAt || ""
         };
       } catch {
-        state.sync = { token: "", gistId: "", enabled: false };
+        state.sync = {
+          token: "",
+          gistId: "",
+          enabled: false,
+          autoPullOnLoad: true,
+          autoPushOnChange: true,
+          lastPulledAt: "",
+          lastPushedAt: ""
+        };
       }
     }
 
@@ -660,8 +931,14 @@
       state.sync.token = $("#syncToken").value.trim();
       state.sync.gistId = $("#syncGistId").value.trim();
       state.sync.enabled = Boolean(state.sync.token);
-      localStorage.setItem(SYNC_KEY, JSON.stringify(state.sync));
+      state.sync.autoPullOnLoad = $("#autoPullOnLoad").checked;
+      state.sync.autoPushOnChange = $("#autoPushOnChange").checked;
+      persistSyncSettings();
       updateSyncUi();
+    }
+
+    function persistSyncSettings() {
+      localStorage.setItem(SYNC_KEY, JSON.stringify(state.sync));
     }
 
     function exportData() {
@@ -684,8 +961,14 @@
     function updateSyncUi(message) {
       $("#syncToken").value = state.sync.token || "";
       $("#syncGistId").value = state.sync.gistId || "";
+      $("#autoPullOnLoad").checked = state.sync.autoPullOnLoad !== false;
+      $("#autoPushOnChange").checked = state.sync.autoPushOnChange !== false;
+      const last = [
+        state.sync.lastPulledAt ? `上次下載：${new Date(state.sync.lastPulledAt).toLocaleString("zh-TW")}` : "",
+        state.sync.lastPushedAt ? `上次上傳：${new Date(state.sync.lastPushedAt).toLocaleString("zh-TW")}` : ""
+      ].filter(Boolean).join("；");
       const status = message || (state.sync.enabled
-        ? `同步已設定${state.sync.gistId ? `，Gist ID：${state.sync.gistId}` : "，尚未建立 Gist"}。`
+        ? `同步已設定${state.sync.gistId ? `，Gist ID：${state.sync.gistId}` : "，尚未建立 Gist"}。${last ? ` ${last}` : ""}`
         : "尚未設定同步。");
       $("#syncStatus").textContent = status;
     }
@@ -730,7 +1013,6 @@
         });
         state.sync.gistId = gist.id;
         $("#syncGistId").value = gist.id;
-        localStorage.setItem(SYNC_KEY, JSON.stringify(state.sync));
       } else {
         await requestGist(`/gists/${state.sync.gistId}`, {
           method: "PATCH",
@@ -738,24 +1020,28 @@
         });
       }
 
+      state.sync.lastPushedAt = new Date().toISOString();
+      persistSyncSettings();
       if (showDone) showToast("已上傳同步");
       updateSyncUi(`同步完成：${new Date().toLocaleTimeString("zh-TW")}`);
     }
 
-    async function pullCloudSync() {
-      saveSyncSettings();
+    async function pullCloudSync(options = {}) {
+      if (options.saveForm !== false) saveSyncSettings();
       if (!state.sync.gistId) throw new Error("請先填 Gist ID，或先按上傳同步建立一個。");
       updateSyncUi("正在下載雲端資料...");
       const gist = await requestGist(`/gists/${state.sync.gistId}`, { method: "GET" });
       const file = gist.files?.[SYNC_FILE];
       if (!file?.content) throw new Error(`找不到 ${SYNC_FILE}。`);
       importData(JSON.parse(file.content));
-      showToast("已下載雲端資料");
+      state.sync.lastPulledAt = new Date().toISOString();
+      persistSyncSettings();
+      if (!options.silent) showToast("已下載雲端資料");
       updateSyncUi(`已下載：${new Date().toLocaleTimeString("zh-TW")}`);
     }
 
     function scheduleCloudPush() {
-      if (!state.sync.enabled) return;
+      if (!state.sync.enabled || !state.sync.autoPushOnChange) return;
       window.clearTimeout(scheduleCloudPush.timer);
       scheduleCloudPush.timer = window.setTimeout(() => {
         pushCloudSync(false).catch((error) => updateSyncUi(`自動同步失敗：${error.message}`));
@@ -771,18 +1057,21 @@
       }
     }
 
-    function isDone(game) {
-      const completions = Array.isArray(game.completedDates) ? game.completedDates : [];
-      return completions.includes(completionKey(game)) || completions.includes(legacyCompletionKey(game));
+    function autoPullIfConfigured() {
+      if (!state.sync.enabled || !state.sync.gistId || state.sync.autoPullOnLoad === false) return;
+      runSyncAction(async () => {
+        await pullCloudSync({ saveForm: false, silent: true });
+        updateSyncUi(`已自動下載：${new Date().toLocaleTimeString("zh-TW")}`);
+      });
     }
 
-    function setDone(gameId, done) {
+    function setDone(gameId, type, done) {
       const game = state.games.find((item) => item.id === gameId);
       if (!game) return;
 
       game.completedDates = Array.isArray(game.completedDates) ? game.completedDates : [];
-      const key = completionKey(game);
-      const legacyKey = legacyCompletionKey(game);
+      const key = completionKey(type);
+      const legacyKey = legacyCompletionKey(type);
       if (done && !game.completedDates.includes(key)) {
         game.completedDates.push(key);
       }
@@ -811,10 +1100,29 @@
         .replaceAll("'", "&#039;");
     }
 
+    function renderTaskSection(game, type) {
+      if (!hasTask(game, type)) return "";
+      const done = isTaskDone(game, type);
+      const title = type === "weekly" ? "每週任務" : "每日任務";
+      const tasks = type === "weekly" ? game.weeklyTasks : game.dailyTasks;
+      return `
+        <div class="task-section ${done ? "done" : ""}">
+          <div class="task-section-head">
+            <span class="task-title">${title}</span>
+            <label class="task-toggle">
+              <input type="checkbox" ${done ? "checked" : ""} data-action="toggle-${type}" data-id="${game.id}">
+              ${taskStatusLabel(type, done)}
+            </label>
+          </div>
+          <div class="tasks">${escapeHtml(tasks.trim())}</div>
+        </div>
+      `;
+    }
+
     function render() {
       const list = $("#gameList");
-      const doneGames = state.games.filter(isDone);
-      const todoGames = state.games.filter((game) => !isDone(game));
+      const doneGames = state.games.filter(isGameDone);
+      const todoGames = state.games.filter((game) => !isGameDone(game));
 
       $("#todoCount").textContent = `未完成 ${todoGames.length}`;
       $("#doneCount").textContent = `已完成 ${doneGames.length}`;
@@ -830,18 +1138,20 @@
       }
 
       list.innerHTML = visibleGames.map((game) => {
-        const done = isDone(game);
-        const tasks = game.tasks?.trim() || "沒有填任務內容";
+        const done = isGameDone(game);
         return `
           <article class="game-row ${done ? "done-row" : ""}">
-            <input class="check" type="checkbox" ${done ? "checked" : ""} aria-label="切換 ${escapeHtml(game.name)} 完成狀態" data-action="toggle" data-id="${game.id}">
+            <div></div>
             <div>
               <div class="game-name">${escapeHtml(game.name)}</div>
-              <div class="tasks">${escapeHtml(tasks)}</div>
+              <div class="task-sections">
+                ${renderTaskSection(game, "daily")}
+                ${renderTaskSection(game, "weekly")}
+                ${hasAnyTask(game) ? "" : `<div class="tasks">沒有填任務內容</div>`}
+              </div>
               ${infoLines(game)}
               <div class="meta">
-                <span class="tag">${frequencyLabel(game)}</span>
-                <span class="tag">${statusLabel(game, done)}</span>
+                ${pendingLabels(game).map((tag) => `<span class="tag">${tag}</span>`).join("")}
                 ${paidTags(game).map((tag) => `<span class="tag">${tag}</span>`).join("")}
                 ${game.updatedAt ? `<span class="tag">更新：${escapeHtml(game.updatedAt)}</span>` : ""}
               </div>
@@ -858,14 +1168,14 @@
     function resetForm() {
       $("#editingId").value = "";
       $("#gameName").value = "";
-      $("#frequency").value = "daily";
       $("#hasMonthlyCard").checked = false;
       $("#hasBattlePass").checked = false;
       $("#versionName").value = "";
       $("#versionEndDate").value = "";
       $("#bannerName").value = "";
       $("#bannerEndDate").value = "";
-      $("#taskText").value = "";
+      $("#dailyTasks").value = "";
+      $("#weeklyTasks").value = "";
       $("#formTitle").textContent = "新增遊戲";
       $("#saveButton").textContent = "加入清單";
       $("#cancelEditButton").hidden = true;
@@ -875,28 +1185,28 @@
       event.preventDefault();
       const id = $("#editingId").value;
       const name = $("#gameName").value.trim();
-      const frequency = $("#frequency").value === "weekly" ? "weekly" : "daily";
       const hasMonthlyCard = $("#hasMonthlyCard").checked;
       const hasBattlePass = $("#hasBattlePass").checked;
       const versionName = $("#versionName").value.trim();
       const versionEndDate = $("#versionEndDate").value;
       const bannerName = $("#bannerName").value.trim();
       const bannerEndDate = $("#bannerEndDate").value;
-      const tasks = $("#taskText").value.trim();
+      const dailyTasks = $("#dailyTasks").value.trim();
+      const weeklyTasks = $("#weeklyTasks").value.trim();
       if (!name) return;
 
       if (id) {
         const game = state.games.find((item) => item.id === id);
         if (game) {
           game.name = name;
-          game.frequency = frequency;
           game.hasMonthlyCard = hasMonthlyCard;
           game.hasBattlePass = hasBattlePass;
           game.versionName = versionName;
           game.versionEndDate = versionEndDate;
           game.bannerName = bannerName;
           game.bannerEndDate = bannerEndDate;
-          game.tasks = tasks;
+          game.dailyTasks = dailyTasks;
+          game.weeklyTasks = weeklyTasks;
           game.updatedAt = state.today;
           showToast("已更新遊戲");
         }
@@ -904,14 +1214,14 @@
         state.games.push({
           id: crypto.randomUUID(),
           name,
-          frequency,
           hasMonthlyCard,
           hasBattlePass,
           versionName,
           versionEndDate,
           bannerName,
           bannerEndDate,
-          tasks,
+          dailyTasks,
+          weeklyTasks,
           completedDates: [],
           updatedAt: state.today
         });
@@ -933,20 +1243,28 @@
       if (!game) return;
 
       if (action === "toggle") {
-        setDone(id, target.checked);
+        setDone(id, "daily", target.checked);
+      }
+
+      if (action === "toggle-daily") {
+        setDone(id, "daily", target.checked);
+      }
+
+      if (action === "toggle-weekly") {
+        setDone(id, "weekly", target.checked);
       }
 
       if (action === "edit") {
         $("#editingId").value = game.id;
         $("#gameName").value = game.name;
-        $("#frequency").value = game.frequency === "weekly" ? "weekly" : "daily";
         $("#hasMonthlyCard").checked = Boolean(game.hasMonthlyCard);
         $("#hasBattlePass").checked = Boolean(game.hasBattlePass);
         $("#versionName").value = game.versionName || "";
         $("#versionEndDate").value = game.versionEndDate || "";
         $("#bannerName").value = game.bannerName || "";
         $("#bannerEndDate").value = game.bannerEndDate || "";
-        $("#taskText").value = game.tasks || "";
+        $("#dailyTasks").value = game.dailyTasks || "";
+        $("#weeklyTasks").value = game.weeklyTasks || "";
         $("#formTitle").textContent = "編輯遊戲";
         $("#saveButton").textContent = "儲存變更";
         $("#cancelEditButton").hidden = false;
@@ -968,13 +1286,21 @@
       render();
     });
 
+    $("#themeSelect").addEventListener("change", (event) => {
+      saveTheme(event.target.value);
+    });
+
     $("#cancelEditButton").addEventListener("click", resetForm);
 
     $("#resetCurrentButton").addEventListener("click", () => {
       state.games.forEach((game) => {
-        const key = completionKey(game);
-        const legacyKey = legacyCompletionKey(game);
-        game.completedDates = (game.completedDates || []).filter((date) => date !== key && date !== legacyKey);
+        const keys = [
+          completionKey("daily"),
+          completionKey("weekly"),
+          legacyCompletionKey("daily"),
+          legacyCompletionKey("weekly")
+        ];
+        game.completedDates = (game.completedDates || []).filter((date) => !keys.includes(date));
       });
       save();
       render();
@@ -991,12 +1317,20 @@
     });
 
     $("#copyTodoButton").addEventListener("click", async () => {
-      const todoGames = state.games.filter((game) => !isDone(game));
+      const todoGames = state.games.filter((game) => !isGameDone(game));
       const text = todoGames.length
         ? `目前還沒完成的遊戲任務：\n${todoGames.map((game) => {
           const extraLines = plainInfoLines(game);
-          const taskLines = game.tasks ? game.tasks.split("\n") : [];
-          return `- [${[frequencyLabel(game), ...paidTags(game)].join(" / ")}] ${game.name}${[...extraLines, ...taskLines].length ? `\n  ${[...extraLines, ...taskLines].join("\n  ")}` : ""}`;
+          const taskLines = [];
+          if (hasTask(game, "daily") && !isTaskDone(game, "daily")) {
+            taskLines.push("每日任務：");
+            taskLines.push(...game.dailyTasks.split("\n").map((line) => `  ${line}`));
+          }
+          if (hasTask(game, "weekly") && !isTaskDone(game, "weekly")) {
+            taskLines.push("每週任務：");
+            taskLines.push(...game.weeklyTasks.split("\n").map((line) => `  ${line}`));
+          }
+          return `- [${paidTags(game).join(" / ") || "任務"}] ${game.name}${[...extraLines, ...taskLines].length ? `\n  ${[...extraLines, ...taskLines].join("\n  ")}` : ""}`;
         }).join("\n")}`
         : "目前的遊戲任務都完成了。";
 
@@ -1011,6 +1345,9 @@
     $("#saveSyncButton").addEventListener("click", () => {
       saveSyncSettings();
       showToast("已儲存同步設定");
+      if (state.sync.autoPullOnLoad && state.sync.gistId) {
+        runSyncAction(() => pullCloudSync({ saveForm: false }));
+      }
     });
 
     $("#pushSyncButton").addEventListener("click", () => {
@@ -1029,10 +1366,12 @@
       weekday: "long"
     }).format(new Date());
 
+    loadTheme();
     load();
     loadSyncSettings();
     updateSyncUi();
     render();
+    autoPullIfConfigured();
   </script>
 </body>
 </html>
