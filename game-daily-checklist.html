@@ -384,6 +384,31 @@
 
     .game-row:first-child { border-top: 0; }
 
+    .game-row.drag-over {
+      outline: 2px dashed var(--accent);
+      outline-offset: -6px;
+      background: color-mix(in srgb, var(--accent) 8%, var(--panel));
+    }
+
+    .drag-handle {
+      width: 32px;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--accent) 8%, var(--panel));
+      color: var(--muted);
+      cursor: grab;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      letter-spacing: 1px;
+      touch-action: none;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+
     .check {
       width: 24px;
       height: 24px;
@@ -526,11 +551,16 @@
       font-size: 16px;
     }
 
-    .sync-status {
+    .sync-status,
+    .app-version {
       color: var(--muted);
       font-size: 12px;
       line-height: 1.5;
       min-height: 18px;
+    }
+
+    .app-version {
+      margin-top: 8px;
     }
 
     .toast {
@@ -713,6 +743,7 @@
           </div>
           <div class="sync-status" id="syncStatus">尚未設定同步。</div>
         </div>
+        <div class="app-version" id="appVersionLabel"></div>
       </aside>
 
       <section>
@@ -743,6 +774,7 @@
     const SYNC_KEY = "game-daily-checklist-sync-v1";
     const THEME_KEY = "game-daily-checklist-theme-v1";
     const SYNC_FILE = "game-daily-checklist-data.json";
+    const APP_VERSION = "v1.9.0";
     const $ = (selector) => document.querySelector(selector);
 
     const state = {
@@ -754,7 +786,8 @@
         autoPullOnLoad: true,
         autoPushOnChange: true,
         lastPulledAt: "",
-        lastPushedAt: ""
+        lastPushedAt: "",
+        lastRemoteUpdatedAt: ""
       },
       filter: "todo",
       theme: "clean",
@@ -1030,7 +1063,8 @@
           autoPullOnLoad: parsed.autoPullOnLoad !== false,
           autoPushOnChange: parsed.autoPushOnChange !== false,
           lastPulledAt: parsed.lastPulledAt || "",
-          lastPushedAt: parsed.lastPushedAt || ""
+          lastPushedAt: parsed.lastPushedAt || "",
+          lastRemoteUpdatedAt: parsed.lastRemoteUpdatedAt || ""
         };
       } catch {
         state.sync = {
@@ -1040,7 +1074,8 @@
           autoPullOnLoad: true,
           autoPushOnChange: true,
           lastPulledAt: "",
-          lastPushedAt: ""
+          lastPushedAt: "",
+          lastRemoteUpdatedAt: ""
         };
       }
     }
@@ -1062,6 +1097,7 @@
     function exportData() {
       return {
         version: 1,
+        appVersion: APP_VERSION,
         updatedAt: new Date().toISOString(),
         games: state.games
       };
@@ -1091,6 +1127,10 @@
       $("#syncStatus").textContent = status;
     }
 
+    function updateAppVersionUi() {
+      $("#appVersionLabel").textContent = `目前版本：${APP_VERSION}`;
+    }
+
     async function requestGist(path, options = {}) {
       if (!state.sync.token) throw new Error("請先填 GitHub Token。");
       const response = await fetch(`https://api.github.com${path}`, {
@@ -1111,9 +1151,32 @@
       return response.json();
     }
 
-    async function pushCloudSync(showDone = true) {
+    function parseCloudData(gist) {
+      const file = gist.files?.[SYNC_FILE];
+      if (!file?.content) throw new Error(`找不到 ${SYNC_FILE}。`);
+      return JSON.parse(file.content);
+    }
+
+    function isRemoteNewer(remoteUpdatedAt) {
+      if (!remoteUpdatedAt) return false;
+      const known = state.sync.lastRemoteUpdatedAt || state.sync.lastPulledAt || state.sync.lastPushedAt || "";
+      return Boolean(known) && new Date(remoteUpdatedAt) > new Date(known);
+    }
+
+    async function fetchCloudData() {
+      const gist = await requestGist(`/gists/${state.sync.gistId}`, { method: "GET" });
+      return parseCloudData(gist);
+    }
+
+    async function pushCloudSync(showDone = true, options = {}) {
       if (!state.sync.enabled) return;
       updateSyncUi("正在上傳同步...");
+      if (state.sync.gistId && !options.force) {
+        const remoteData = await fetchCloudData();
+        if (isRemoteNewer(remoteData.updatedAt)) {
+          throw new Error("雲端資料比較新，請先按「下載雲端」再上傳。");
+        }
+      }
       const body = {
         description: "Game daily checklist sync data",
         public: false,
@@ -1139,6 +1202,7 @@
       }
 
       state.sync.lastPushedAt = new Date().toISOString();
+      state.sync.lastRemoteUpdatedAt = JSON.parse(body.files[SYNC_FILE].content).updatedAt;
       persistSyncSettings();
       if (showDone) showToast("已上傳同步");
       updateSyncUi(`同步完成：${new Date().toLocaleTimeString("zh-TW")}`);
@@ -1148,11 +1212,10 @@
       if (options.saveForm !== false) saveSyncSettings();
       if (!state.sync.gistId) throw new Error("請先填 Gist ID，或先按上傳同步建立一個。");
       updateSyncUi("正在下載雲端資料...");
-      const gist = await requestGist(`/gists/${state.sync.gistId}`, { method: "GET" });
-      const file = gist.files?.[SYNC_FILE];
-      if (!file?.content) throw new Error(`找不到 ${SYNC_FILE}。`);
-      importData(JSON.parse(file.content));
+      const data = await fetchCloudData();
+      importData(data);
       state.sync.lastPulledAt = new Date().toISOString();
+      state.sync.lastRemoteUpdatedAt = data.updatedAt || state.sync.lastPulledAt;
       persistSyncSettings();
       if (!options.silent) showToast("已下載雲端資料");
       updateSyncUi(`已下載：${new Date().toLocaleTimeString("zh-TW")}`);
@@ -1258,8 +1321,8 @@
       list.innerHTML = visibleGames.map((game) => {
         const done = isGameDone(game);
         return `
-          <article class="game-row ${done ? "done-row" : ""}">
-            <div></div>
+          <article class="game-row ${done ? "done-row" : ""}" draggable="true" data-id="${game.id}">
+            <button class="drag-handle" type="button" title="拖曳排序" aria-label="拖曳排序" data-action="drag-handle">⋮⋮</button>
             <div>
               <div class="game-name">${escapeHtml(game.name)}</div>
               <div class="task-sections">
@@ -1276,6 +1339,8 @@
               </div>
             </div>
             <div class="row-actions">
+              <button class="icon-button" type="button" title="上移" data-action="move-up" data-id="${game.id}">↑</button>
+              <button class="icon-button" type="button" title="下移" data-action="move-down" data-id="${game.id}">↓</button>
               <button class="icon-button" type="button" title="編輯" data-action="edit" data-id="${game.id}">✎</button>
               <button class="icon-button delete" type="button" title="刪除" data-action="delete" data-id="${game.id}">×</button>
             </div>
@@ -1367,6 +1432,7 @@
     $("#gameList").addEventListener("click", (event) => {
       const target = event.target.closest("[data-action]");
       if (!target) return;
+      if (target.dataset.action === "drag-handle") return;
 
       const id = target.dataset.id;
       const action = target.dataset.action;
@@ -1383,6 +1449,17 @@
 
       if (action === "toggle-weekly") {
         setDone(id, "weekly", target.checked);
+      }
+
+      if (action === "move-up" || action === "move-down") {
+        const index = state.games.findIndex((item) => item.id === id);
+        const nextIndex = action === "move-up" ? index - 1 : index + 1;
+        if (index < 0 || nextIndex < 0 || nextIndex >= state.games.length) return;
+        const [moved] = state.games.splice(index, 1);
+        state.games.splice(nextIndex, 0, moved);
+        save();
+        render();
+        showToast("已更新排序");
       }
 
       if (action === "edit") {
@@ -1413,6 +1490,49 @@
         render();
         showToast("已刪除遊戲");
       }
+    });
+
+    $("#gameList").addEventListener("dragstart", (event) => {
+      const row = event.target.closest(".game-row");
+      if (!row) return;
+      event.dataTransfer.setData("text/plain", row.dataset.id);
+      event.dataTransfer.effectAllowed = "move";
+    });
+
+    $("#gameList").addEventListener("dragover", (event) => {
+      const row = event.target.closest(".game-row");
+      if (!row) return;
+      event.preventDefault();
+      row.classList.add("drag-over");
+    });
+
+    $("#gameList").addEventListener("dragleave", (event) => {
+      const row = event.target.closest(".game-row");
+      if (row) row.classList.remove("drag-over");
+    });
+
+    $("#gameList").addEventListener("drop", (event) => {
+      const row = event.target.closest(".game-row");
+      if (!row) return;
+      event.preventDefault();
+      row.classList.remove("drag-over");
+      const draggedId = event.dataTransfer.getData("text/plain");
+      const targetId = row.dataset.id;
+      if (!draggedId || draggedId === targetId) return;
+
+      const from = state.games.findIndex((game) => game.id === draggedId);
+      const to = state.games.findIndex((game) => game.id === targetId);
+      if (from < 0 || to < 0) return;
+
+      const [moved] = state.games.splice(from, 1);
+      state.games.splice(to, 0, moved);
+      save();
+      render();
+      showToast("已更新排序");
+    });
+
+    $("#gameList").addEventListener("dragend", () => {
+      document.querySelectorAll(".drag-over").forEach((item) => item.classList.remove("drag-over"));
     });
 
     $("#filterMode").addEventListener("change", (event) => {
@@ -1503,6 +1623,7 @@
     loadTheme();
     load();
     loadSyncSettings();
+    updateAppVersionUi();
     updateSyncUi();
     render();
     autoPullIfConfigured();
