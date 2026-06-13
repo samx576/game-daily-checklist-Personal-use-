@@ -762,6 +762,34 @@
       week: getWeekKey(new Date())
     };
 
+    function refreshCurrentDate() {
+      const now = new Date();
+      state.today = now.toLocaleDateString("sv-SE");
+      state.week = getWeekKey(now);
+      $("#todayLabel").textContent = new Intl.DateTimeFormat("zh-TW", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "long"
+      }).format(now);
+    }
+
+    function startTimeHeartbeat() {
+      window.setInterval(() => {
+        const previousToday = state.today;
+        refreshCurrentDate();
+        render();
+        if (state.today !== previousToday) updateSyncUi();
+      }, 60000);
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState !== "visible") return;
+        refreshCurrentDate();
+        render();
+        autoPullIfConfigured();
+      });
+    }
+
     function loadTheme() {
       const saved = localStorage.getItem(THEME_KEY);
       state.theme = ["clean", "night", "sakura", "arcade"].includes(saved) ? saved : "clean";
@@ -1471,19 +1499,14 @@
       runSyncAction(pullCloudSync);
     });
 
-    $("#todayLabel").textContent = new Intl.DateTimeFormat("zh-TW", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      weekday: "long"
-    }).format(new Date());
-
+    refreshCurrentDate();
     loadTheme();
     load();
     loadSyncSettings();
     updateSyncUi();
     render();
     autoPullIfConfigured();
+    startTimeHeartbeat();
   </script>
 </body>
 </html>
