@@ -507,6 +507,20 @@
       color: var(--text);
     }
 
+    .weekly-record {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--ok) 8%, var(--panel));
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .weekly-record strong {
+      color: var(--text);
+    }
+
     .row-actions {
       display: flex;
       gap: 7px;
@@ -750,15 +764,19 @@
         <div class="toolbar">
           <div class="summary">
             <span class="pill todo" id="todoCount">未完成 0</span>
+            <span class="pill todo" id="dailyTodoCount">每日未完成 0</span>
+            <span class="pill todo" id="weeklyTodoCount">每週未完成 0</span>
             <span class="pill done" id="doneCount">已完成 0</span>
             <span class="pill" id="totalCount">總共 0</span>
           </div>
           <div class="filters">
             <label for="filterMode">顯示</label>
             <select id="filterMode">
-              <option value="todo">只看未完成</option>
+              <option value="todo">所有未完成</option>
+              <option value="daily-todo">只看每日未完成</option>
+              <option value="weekly-todo">只看每週未完成</option>
               <option value="all">全部</option>
-              <option value="done">只看已完成</option>
+              <option value="done">任務全完成</option>
             </select>
           </div>
         </div>
@@ -774,7 +792,7 @@
     const SYNC_KEY = "game-daily-checklist-sync-v1";
     const THEME_KEY = "game-daily-checklist-theme-v1";
     const SYNC_FILE = "game-daily-checklist-data.json";
-    const APP_VERSION = "v1.9.0";
+    const APP_VERSION = "v1.11.0";
     const $ = (selector) => document.querySelector(selector);
 
     const state = {
@@ -879,6 +897,20 @@
       return getWeekKey(gameCycleDate(game));
     }
 
+    function addDays(date, days) {
+      const result = new Date(date);
+      result.setDate(result.getDate() + days);
+      return result;
+    }
+
+    function dateKey(date) {
+      return date.toLocaleDateString("sv-SE");
+    }
+
+    function weekdayLabel(date) {
+      return new Intl.DateTimeFormat("zh-TW", { weekday: "short", month: "numeric", day: "numeric" }).format(date);
+    }
+
     function addDaysToToday(days) {
       const date = new Date(`${state.today}T00:00:00`);
       date.setDate(date.getDate() + days);
@@ -931,6 +963,14 @@
 
     function isGameDone(game) {
       return isTaskDone(game, "daily") && isTaskDone(game, "weekly");
+    }
+
+    function isDailyTodo(game) {
+      return hasTask(game, "daily") && !isTaskDone(game, "daily");
+    }
+
+    function isWeeklyTodo(game) {
+      return hasTask(game, "weekly") && !isTaskDone(game, "weekly");
     }
 
     function hasAnyTask(game) {
@@ -1025,6 +1065,49 @@
         lines.push(`卡池：${game.bannerName || "未填卡池"}${remain ? `，${remain}${endTime}` : ""}`);
       }
       return lines;
+    }
+
+    function weeklyDailyRecord(game) {
+      if (!hasTask(game, "daily")) return "";
+      const cycle = gameCycleDate(game);
+      const day = cycle.getDay() || 7;
+      const start = addDays(cycle, 1 - day);
+      const days = [];
+      for (let i = 0; i <= day - 1; i += 1) {
+        const date = addDays(start, i);
+        const key = `D:${dateKey(date)}`;
+        const legacyKey = dateKey(date);
+        const done = (game.completedDates || []).includes(key) || (game.completedDates || []).includes(legacyKey);
+        days.push({ date, done });
+      }
+      const doneCount = days.filter((item) => item.done).length;
+      const missed = days.filter((item) => !item.done).map((item) => weekdayLabel(item.date));
+      const missedText = missed.length ? `未完成：${missed.join("、")}` : "本週目前沒有漏掉";
+      return `<div class="weekly-record"><strong>本週每日：</strong>${doneCount}/${days.length} 天完成，${missedText}</div>`;
+    }
+
+    function plainWeeklyDailyRecord(game) {
+      if (!hasTask(game, "daily")) return "";
+      const cycle = gameCycleDate(game);
+      const day = cycle.getDay() || 7;
+      const start = addDays(cycle, 1 - day);
+      const days = [];
+      for (let i = 0; i <= day - 1; i += 1) {
+        const date = addDays(start, i);
+        const key = `D:${dateKey(date)}`;
+        const legacyKey = dateKey(date);
+        const done = (game.completedDates || []).includes(key) || (game.completedDates || []).includes(legacyKey);
+        days.push({ date, done });
+      }
+      const doneCount = days.filter((item) => item.done).length;
+      const missed = days.filter((item) => !item.done).map((item) => weekdayLabel(item.date));
+      return `本週每日：${doneCount}/${days.length} 天完成${missed.length ? `，未完成：${missed.join("、")}` : "，本週目前沒有漏掉"}`;
+    }
+
+    function filteredTodoGames() {
+      if (state.filter === "daily-todo") return state.games.filter(isDailyTodo);
+      if (state.filter === "weekly-todo") return state.games.filter(isWeeklyTodo);
+      return state.games.filter((game) => !isGameDone(game));
     }
 
     function load() {
@@ -1304,13 +1387,19 @@
       const list = $("#gameList");
       const doneGames = state.games.filter(isGameDone);
       const todoGames = state.games.filter((game) => !isGameDone(game));
+      const dailyTodoGames = state.games.filter(isDailyTodo);
+      const weeklyTodoGames = state.games.filter(isWeeklyTodo);
 
       $("#todoCount").textContent = `未完成 ${todoGames.length}`;
+      $("#dailyTodoCount").textContent = `每日未完成 ${dailyTodoGames.length}`;
+      $("#weeklyTodoCount").textContent = `每週未完成 ${weeklyTodoGames.length}`;
       $("#doneCount").textContent = `已完成 ${doneGames.length}`;
       $("#totalCount").textContent = `總共 ${state.games.length}`;
 
       let visibleGames = state.games;
       if (state.filter === "todo") visibleGames = todoGames;
+      if (state.filter === "daily-todo") visibleGames = dailyTodoGames;
+      if (state.filter === "weekly-todo") visibleGames = weeklyTodoGames;
       if (state.filter === "done") visibleGames = doneGames;
 
       if (visibleGames.length === 0) {
@@ -1331,6 +1420,7 @@
                 ${hasAnyTask(game) ? "" : `<div class="tasks">沒有填任務內容</div>`}
               </div>
               ${infoLines(game)}
+              ${weeklyDailyRecord(game)}
               <div class="meta">
                 <span class="tag">重置 ${parseResetTime(game.resetTime).value}</span>
                 ${pendingLabels(game).map((tag) => `<span class="tag">${tag}</span>`).join("")}
@@ -1577,16 +1667,18 @@
     });
 
     $("#copyTodoButton").addEventListener("click", async () => {
-      const todoGames = state.games.filter((game) => !isGameDone(game));
+      const todoGames = filteredTodoGames();
       const text = todoGames.length
         ? `目前還沒完成的遊戲任務：\n${todoGames.map((game) => {
           const extraLines = plainInfoLines(game);
+          const recordLine = plainWeeklyDailyRecord(game);
+          if (recordLine) extraLines.push(recordLine);
           const taskLines = [];
-          if (hasTask(game, "daily") && !isTaskDone(game, "daily")) {
+          if (state.filter !== "weekly-todo" && hasTask(game, "daily") && !isTaskDone(game, "daily")) {
             taskLines.push("每日任務：");
             taskLines.push(...game.dailyTasks.split("\n").map((line) => `  ${line}`));
           }
-          if (hasTask(game, "weekly") && !isTaskDone(game, "weekly")) {
+          if (state.filter !== "daily-todo" && hasTask(game, "weekly") && !isTaskDone(game, "weekly")) {
             taskLines.push("每週任務：");
             taskLines.push(...game.weeklyTasks.split("\n").map((line) => `  ${line}`));
           }
