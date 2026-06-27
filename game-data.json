@@ -1,6 +1,6 @@
 {
-  "updatedAt": "2026-06-27T22:55:54.319Z",
-  "note": "這份資料由 GitHub Actions 自動更新。抓不到資料時會保留現有資料。",
+  "updatedAt": "2026-06-27T23:02:41.815Z",
+  "note": "這份資料由 GitHub Actions 自動更新。原神目前嘗試從 BWIKI 卡池計時器抓取。",
   "games": [
     {
       "name": "原神",
@@ -8,11 +8,11 @@
         "Genshin Impact",
         "Genshin"
       ],
-      "versionName": "請填目前版本",
+      "versionName": "月之七下半",
       "versionEndDate": "",
-      "bannerName": "請填目前角色卡池",
-      "bannerEndDate": "",
-      "bannerEndTime": "17:59",
+      "bannerName": "月之七下半：玛薇卡 / 洛恩 / 班尼特 / 香菱 / 米卡 / 焚曜千阳 / 灾悔 / 西风长枪 / 雨裁 / 暗巷猎手 / 暗巷的酒与诗 / 暗巷闪光",
+      "bannerEndDate": "2026-07-01",
+      "bannerEndTime": "04:02",
       "versionEventDone": false
     },
     {
