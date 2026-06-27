@@ -362,6 +362,26 @@
       padding: 8px 10px;
     }
 
+    .quick-filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 0 14px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .quick-filter {
+      min-height: 38px;
+      padding: 8px 12px;
+      background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+      color: var(--text);
+    }
+
+    .quick-filter.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
     .game-list {
       display: grid;
       gap: 0;
@@ -505,6 +525,32 @@
 
     .info-lines strong {
       color: var(--text);
+    }
+
+    .info-lines .soon {
+      color: var(--warn);
+      font-weight: 800;
+    }
+
+    .info-lines .expired {
+      color: var(--danger);
+      font-weight: 800;
+    }
+
+    .quick-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .quick-check input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
     }
 
     .weekly-record {
@@ -676,6 +722,13 @@
             <label for="versionEndDate">版本結束日</label>
             <input id="versionEndDate" type="date">
           </div>
+          <div class="check-group">
+            <label>版本活動狀態</label>
+            <label class="check-line">
+              <input type="checkbox" id="versionEventDone">
+              該版本活動已完成
+            </label>
+          </div>
           <div>
             <label for="bannerName">目前卡池</label>
             <input id="bannerName" autocomplete="off" placeholder="例如：角色 A / 角色 B">
@@ -729,6 +782,15 @@
         </div>
 
         <div class="sync-box">
+          <h3>遊戲資料匯入</h3>
+          <p class="hint">讀取同一個 GitHub Pages 目錄的 game-data.json，依照遊戲名稱更新版本、卡池和活動狀態。</p>
+          <div class="actions">
+            <button class="secondary" type="button" id="importGameDataButton">讀取 game-data.json</button>
+          </div>
+          <div class="sync-status" id="gameDataStatus">尚未匯入遊戲資料。</div>
+        </div>
+
+        <div class="sync-box">
           <h3>雲端同步</h3>
           <p class="hint">使用 GitHub Gist 同步。手機和電腦填同一個 Gist ID，就會共用資料。</p>
           <div>
@@ -766,6 +828,7 @@
             <span class="pill todo" id="todoCount">未完成 0</span>
             <span class="pill todo" id="dailyTodoCount">每日未完成 0</span>
             <span class="pill todo" id="weeklyTodoCount">每週未完成 0</span>
+            <span class="pill todo" id="activityTodoCount">活動未完成 0</span>
             <span class="pill done" id="doneCount">已完成 0</span>
             <span class="pill" id="totalCount">總共 0</span>
           </div>
@@ -773,12 +836,20 @@
             <label for="filterMode">顯示</label>
             <select id="filterMode">
               <option value="todo">所有未完成</option>
+              <option value="today">今日建議</option>
               <option value="daily-todo">只看每日未完成</option>
               <option value="weekly-todo">只看每週未完成</option>
+              <option value="activity-todo">只看活動未完成</option>
               <option value="all">全部</option>
               <option value="done">任務全完成</option>
             </select>
           </div>
+        </div>
+        <div class="quick-filters" aria-label="快速篩選">
+          <button class="quick-filter" type="button" data-filter="today">今日建議</button>
+          <button class="quick-filter" type="button" data-filter="daily-todo">每日</button>
+          <button class="quick-filter" type="button" data-filter="weekly-todo">每週</button>
+          <button class="quick-filter" type="button" data-filter="activity-todo">活動</button>
         </div>
         <div class="game-list" id="gameList"></div>
       </section>
@@ -792,7 +863,7 @@
     const SYNC_KEY = "game-daily-checklist-sync-v1";
     const THEME_KEY = "game-daily-checklist-theme-v1";
     const SYNC_FILE = "game-daily-checklist-data.json";
-    const APP_VERSION = "v1.11.0";
+    const APP_VERSION = "v1.15.0";
     const $ = (selector) => document.querySelector(selector);
 
     const state = {
@@ -807,7 +878,7 @@
         lastPushedAt: "",
         lastRemoteUpdatedAt: ""
       },
-      filter: "todo",
+      filter: "today",
       theme: "clean",
       today: new Date().toLocaleDateString("sv-SE"),
       week: getWeekKey(new Date())
@@ -935,6 +1006,7 @@
       game.monthlyCardEndDate = game.monthlyCardEndDate || "";
       game.versionName = game.versionName || "";
       game.versionEndDate = game.versionEndDate || "";
+      game.versionEventDone = Boolean(game.versionEventDone);
       game.bannerName = game.bannerName || "";
       game.bannerEndDate = game.bannerEndDate || "";
       game.bannerEndTime = parseResetTime(game.bannerEndTime || "23:59").value;
@@ -962,7 +1034,7 @@
     }
 
     function isGameDone(game) {
-      return isTaskDone(game, "daily") && isTaskDone(game, "weekly");
+      return isTaskDone(game, "daily") && isTaskDone(game, "weekly") && !isActivityTodo(game);
     }
 
     function isDailyTodo(game) {
@@ -971,6 +1043,14 @@
 
     function isWeeklyTodo(game) {
       return hasTask(game, "weekly") && !isTaskDone(game, "weekly");
+    }
+
+    function tracksActivity(game) {
+      return Boolean(game.versionName || game.versionEndDate || game.versionEventDone);
+    }
+
+    function isActivityTodo(game) {
+      return tracksActivity(game) && !game.versionEventDone;
     }
 
     function hasAnyTask(game) {
@@ -986,6 +1066,7 @@
       const labels = [];
       if (hasTask(game, "daily") && !isTaskDone(game, "daily")) labels.push("每日未完成");
       if (hasTask(game, "weekly") && !isTaskDone(game, "weekly")) labels.push("每週未完成");
+      if (isActivityTodo(game)) labels.push("活動未完成");
       if (!labels.length && hasAnyTask(game)) labels.push("任務已完成");
       if (!labels.length) labels.push("沒有任務");
       return labels;
@@ -1009,6 +1090,17 @@
       return `已結束 ${Math.abs(days)} 天`;
     }
 
+    function dayStatusClass(dateText) {
+      if (!dateText) return "";
+      const target = new Date(`${dateText}T00:00:00`);
+      if (Number.isNaN(target.getTime())) return "";
+      const today = new Date(`${state.today}T00:00:00`);
+      const days = Math.ceil((target - today) / 86400000);
+      if (days < 0) return "expired";
+      if (days <= 3) return "soon";
+      return "";
+    }
+
     function timeUntil(dateText, timeText) {
       if (!dateText) return "";
       const time = parseResetTime(timeText || "23:59").value;
@@ -1029,22 +1121,66 @@
       return `已結束 ${detail}`;
     }
 
+    function timeStatusClass(dateText, timeText) {
+      if (!dateText) return "";
+      const time = parseResetTime(timeText || "23:59").value;
+      const target = new Date(`${dateText}T${time}:00`);
+      if (Number.isNaN(target.getTime())) return "";
+      const diff = target - new Date();
+      if (diff < 0) return "expired";
+      if (diff <= 3 * 86400000) return "soon";
+      return "";
+    }
+
+    function urgencyScore(game) {
+      let score = 0;
+      if (isDailyTodo(game)) score += 100;
+      if (isActivityTodo(game)) score += 55;
+      if (isWeeklyTodo(game)) score += 35;
+      if (["soon", "expired"].includes(dayStatusClass(game.monthlyCardEndDate))) score += 20;
+      if (["soon", "expired"].includes(dayStatusClass(game.versionEndDate))) score += 15;
+      if (["soon", "expired"].includes(timeStatusClass(game.bannerEndDate, game.bannerEndTime))) score += 15;
+      return score;
+    }
+
+    function todaySuggestedGames() {
+      return state.games
+        .map((game, index) => ({ game, index, score: urgencyScore(game) }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score || a.index - b.index)
+        .map((item) => item.game);
+    }
+
+    function updateQuickFilterButtons() {
+      document.querySelectorAll("[data-filter]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.filter === state.filter);
+      });
+      $("#filterMode").value = state.filter;
+    }
+
+    function statusSpan(text, className) {
+      return className ? `<span class="${className}">${text}</span>` : text;
+    }
+
     function infoLines(game) {
       const lines = [];
       if (game.hasMonthlyCard || game.monthlyCardEndDate) {
         const remain = daysUntil(game.monthlyCardEndDate);
-        lines.push(`<div><strong>月卡：</strong>${remain || "未填到期日"}</div>`);
+        lines.push(`<div><strong>月卡：</strong>${remain ? statusSpan(remain, dayStatusClass(game.monthlyCardEndDate)) : "未填到期日"}</div>`);
       }
       if (game.versionName || game.versionEndDate) {
         const left = game.versionName ? escapeHtml(game.versionName) : "未填版本";
         const remain = daysUntil(game.versionEndDate);
-        lines.push(`<div><strong>版本：</strong>${left}${remain ? `，${remain}` : ""}</div>`);
+        lines.push(`<div><strong>版本：</strong>${left}${remain ? `，${statusSpan(remain, dayStatusClass(game.versionEndDate))}` : ""}</div>`);
+      }
+      if (game.versionName || game.versionEndDate || game.versionEventDone) {
+        lines.push(`<div><strong>版本活動：</strong>${game.versionEventDone ? "已完成" : "未完成"}</div>`);
       }
       if (game.bannerName || game.bannerEndDate) {
         const left = game.bannerName ? escapeHtml(game.bannerName) : "未填卡池";
         const remain = timeUntil(game.bannerEndDate, game.bannerEndTime);
         const endTime = game.bannerEndDate ? `（${parseResetTime(game.bannerEndTime).value}）` : "";
-        lines.push(`<div><strong>卡池：</strong>${left}${remain ? `，${remain}${endTime}` : ""}</div>`);
+        lines.push(`<div><strong>卡池：</strong>${left}${remain ? `，${statusSpan(`${remain}${endTime}`, timeStatusClass(game.bannerEndDate, game.bannerEndTime))}` : ""}</div>`);
       }
       return lines.length ? `<div class="info-lines">${lines.join("")}</div>` : "";
     }
@@ -1058,6 +1194,9 @@
       if (game.versionName || game.versionEndDate) {
         const remain = daysUntil(game.versionEndDate);
         lines.push(`版本：${game.versionName || "未填版本"}${remain ? `，${remain}` : ""}`);
+      }
+      if (game.versionName || game.versionEndDate || game.versionEventDone) {
+        lines.push(`版本活動：${game.versionEventDone ? "已完成" : "未完成"}`);
       }
       if (game.bannerName || game.bannerEndDate) {
         const remain = timeUntil(game.bannerEndDate, game.bannerEndTime);
@@ -1107,6 +1246,8 @@
     function filteredTodoGames() {
       if (state.filter === "daily-todo") return state.games.filter(isDailyTodo);
       if (state.filter === "weekly-todo") return state.games.filter(isWeeklyTodo);
+      if (state.filter === "activity-todo") return state.games.filter(isActivityTodo);
+      if (state.filter === "today") return todaySuggestedGames();
       return state.games.filter((game) => !isGameDone(game));
     }
 
@@ -1321,6 +1462,57 @@
       }
     }
 
+    function normalizeExternalGame(item) {
+      return {
+        name: String(item.name || "").trim(),
+        versionName: item.versionName || "",
+        versionEndDate: item.versionEndDate || "",
+        bannerName: item.bannerName || "",
+        bannerEndDate: item.bannerEndDate || "",
+        bannerEndTime: parseResetTime(item.bannerEndTime || "23:59").value,
+        versionEventDone: Boolean(item.versionEventDone)
+      };
+    }
+
+    async function importGameData() {
+      const status = $("#gameDataStatus");
+      status.textContent = "正在讀取 game-data.json...";
+      const response = await fetch(`./game-data.json?ts=${Date.now()}`, { cache: "no-store" });
+      if (!response.ok) throw new Error(`讀取失敗：HTTP ${response.status}`);
+      const data = await response.json();
+      const incoming = Array.isArray(data.games) ? data.games.map(normalizeExternalGame) : [];
+      if (!incoming.length) throw new Error("game-data.json 裡沒有 games 資料。");
+
+      let matched = 0;
+      const missing = [];
+      incoming.forEach((external) => {
+        if (!external.name) return;
+        const game = state.games.find((item) => item.name.trim() === external.name);
+        if (!game) {
+          missing.push(external.name);
+          return;
+        }
+        game.versionName = external.versionName;
+        game.versionEndDate = external.versionEndDate;
+        game.bannerName = external.bannerName;
+        game.bannerEndDate = external.bannerEndDate;
+        game.bannerEndTime = external.bannerEndTime;
+        game.versionEventDone = external.versionEventDone;
+        game.updatedAt = state.today;
+        matched += 1;
+      });
+
+      if (matched > 0) {
+        save();
+        render();
+      }
+
+      const updatedAt = data.updatedAt ? `資料時間：${data.updatedAt}。` : "";
+      const missingText = missing.length ? ` 找不到同名遊戲：${missing.join("、")}。` : "";
+      status.textContent = `已套用 ${matched} 款遊戲。${updatedAt}${missingText}`;
+      showToast(`已匯入 ${matched} 款遊戲資料`);
+    }
+
     function autoPullIfConfigured() {
       if (!state.sync.enabled || !state.sync.gistId || state.sync.autoPullOnLoad === false) return;
       runSyncAction(async () => {
@@ -1385,21 +1577,26 @@
 
     function render() {
       const list = $("#gameList");
+      updateQuickFilterButtons();
       const doneGames = state.games.filter(isGameDone);
       const todoGames = state.games.filter((game) => !isGameDone(game));
       const dailyTodoGames = state.games.filter(isDailyTodo);
       const weeklyTodoGames = state.games.filter(isWeeklyTodo);
+      const activityTodoGames = state.games.filter(isActivityTodo);
 
       $("#todoCount").textContent = `未完成 ${todoGames.length}`;
       $("#dailyTodoCount").textContent = `每日未完成 ${dailyTodoGames.length}`;
       $("#weeklyTodoCount").textContent = `每週未完成 ${weeklyTodoGames.length}`;
+      $("#activityTodoCount").textContent = `活動未完成 ${activityTodoGames.length}`;
       $("#doneCount").textContent = `已完成 ${doneGames.length}`;
       $("#totalCount").textContent = `總共 ${state.games.length}`;
 
       let visibleGames = state.games;
       if (state.filter === "todo") visibleGames = todoGames;
+      if (state.filter === "today") visibleGames = todaySuggestedGames();
       if (state.filter === "daily-todo") visibleGames = dailyTodoGames;
       if (state.filter === "weekly-todo") visibleGames = weeklyTodoGames;
+      if (state.filter === "activity-todo") visibleGames = activityTodoGames;
       if (state.filter === "done") visibleGames = doneGames;
 
       if (visibleGames.length === 0) {
@@ -1420,6 +1617,12 @@
                 ${hasAnyTask(game) ? "" : `<div class="tasks">沒有填任務內容</div>`}
               </div>
               ${infoLines(game)}
+              ${tracksActivity(game) ? `
+                <label class="quick-check">
+                  <input type="checkbox" ${game.versionEventDone ? "checked" : ""} data-action="toggle-activity" data-id="${game.id}">
+                  版本活動已完成
+                </label>
+              ` : ""}
               ${weeklyDailyRecord(game)}
               <div class="meta">
                 <span class="tag">重置 ${parseResetTime(game.resetTime).value}</span>
@@ -1448,6 +1651,7 @@
       $("#monthlyCardEndDate").value = "";
       $("#versionName").value = "";
       $("#versionEndDate").value = "";
+      $("#versionEventDone").checked = false;
       $("#bannerName").value = "";
       $("#bannerEndDate").value = "";
       $("#bannerEndTime").value = "23:59";
@@ -1468,6 +1672,7 @@
       const monthlyCardEndDate = $("#monthlyCardEndDate").value;
       const versionName = $("#versionName").value.trim();
       const versionEndDate = $("#versionEndDate").value;
+      const versionEventDone = $("#versionEventDone").checked;
       const bannerName = $("#bannerName").value.trim();
       const bannerEndDate = $("#bannerEndDate").value;
       const bannerEndTime = parseResetTime($("#bannerEndTime").value || "23:59").value;
@@ -1485,6 +1690,7 @@
           game.monthlyCardEndDate = monthlyCardEndDate;
           game.versionName = versionName;
           game.versionEndDate = versionEndDate;
+          game.versionEventDone = versionEventDone;
           game.bannerName = bannerName;
           game.bannerEndDate = bannerEndDate;
           game.bannerEndTime = bannerEndTime;
@@ -1503,6 +1709,7 @@
           monthlyCardEndDate,
           versionName,
           versionEndDate,
+          versionEventDone,
           bannerName,
           bannerEndDate,
           bannerEndTime,
@@ -1541,6 +1748,13 @@
         setDone(id, "weekly", target.checked);
       }
 
+      if (action === "toggle-activity") {
+        game.versionEventDone = target.checked;
+        save();
+        render();
+        showToast(target.checked ? "活動標記為已完成" : "活動標記為未完成");
+      }
+
       if (action === "move-up" || action === "move-down") {
         const index = state.games.findIndex((item) => item.id === id);
         const nextIndex = action === "move-up" ? index - 1 : index + 1;
@@ -1561,6 +1775,7 @@
         $("#monthlyCardEndDate").value = game.monthlyCardEndDate || "";
         $("#versionName").value = game.versionName || "";
         $("#versionEndDate").value = game.versionEndDate || "";
+        $("#versionEventDone").checked = Boolean(game.versionEventDone);
         $("#bannerName").value = game.bannerName || "";
         $("#bannerEndDate").value = game.bannerEndDate || "";
         $("#bannerEndTime").value = parseResetTime(game.bannerEndTime || "23:59").value;
@@ -1625,9 +1840,24 @@
       document.querySelectorAll(".drag-over").forEach((item) => item.classList.remove("drag-over"));
     });
 
-    $("#filterMode").addEventListener("change", (event) => {
-      state.filter = event.target.value;
+    function setFilter(value) {
+      state.filter = value;
       render();
+    }
+
+    $("#filterMode").addEventListener("change", (event) => {
+      setFilter(event.target.value);
+    });
+
+    document.querySelectorAll("[data-filter]").forEach((button) => {
+      button.addEventListener("click", () => setFilter(button.dataset.filter));
+    });
+
+    $("#importGameDataButton").addEventListener("click", () => {
+      importGameData().catch((error) => {
+        $("#gameDataStatus").textContent = `匯入失敗：${error.message}`;
+        showToast("匯入失敗");
+      });
     });
 
     $("#themeSelect").addEventListener("change", (event) => {
