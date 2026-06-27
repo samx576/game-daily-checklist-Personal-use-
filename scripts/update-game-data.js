@@ -129,9 +129,14 @@ function pickGenshinInfoFromAnnouncements(data) {
     ? list.flatMap((group) => Array.isArray(group.list) ? group.list : [group])
     : [];
 
-  const titles = items
+    const titles = items
     .map((item) => String(item.title || item.subtitle || item.name || "").trim())
     .filter(Boolean);
+
+  console.log("Genshin announcement titles:");
+  titles.slice(0, 30).forEach((title, index) => {
+    console.log(`${index + 1}. ${title}`);
+  });
 
   const versionTitle = titles.find((title) => /版本|Version/i.test(title));
   const bannerTitle = titles.find((title) => /祈願|角色|活動祈願|Wish|Banner/i.test(title));
