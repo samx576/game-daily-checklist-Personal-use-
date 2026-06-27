@@ -71,4 +71,6 @@ const output = {
   games
 };
 
-fs.writeFileSync(DATA
+fs.writeFileSync(DATA_FILE, JSON.stringify(output, null, 2) + "\n", "utf8");
+
+console.log(`Updated ${DATA_FILE}`);
