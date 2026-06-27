@@ -1,0 +1,5 @@
+on:
+  schedule:
+    - cron: "10 8 * * *"
+      timezone: "Asia/Taipei"
+  workflow_dispatch:
