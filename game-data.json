@@ -60,36 +60,6 @@
       "bannerEndDate": "",
       "bannerEndTime": "23:59",
       "versionEventDone": false
-    },
-    {
-      "name": "少女前線2：追放",
-      "aliases": ["少女前線2", "少前2", "Girls' Frontline 2: Exilium", "GFL2", "Exilium"],
-      "versionName": "請填目前版本",
-      "versionEndDate": "",
-      "bannerName": "請填目前角色卡池",
-      "bannerEndDate": "",
-      "bannerEndTime": "23:59",
-      "versionEventDone": false
-    },
-    {
-      "name": "棕色塵埃2",
-      "aliases": ["棕塵2", "Brown Dust 2", "BD2", "Brave Nine 2"],
-      "versionName": "請填目前版本",
-      "versionEndDate": "",
-      "bannerName": "請填目前角色卡池",
-      "bannerEndDate": "",
-      "bannerEndTime": "23:59",
-      "versionEventDone": false
-    },
-    {
-      "name": "勝利女神：妮姬",
-      "aliases": ["妮姬", "勝利女神妮姬", "NIKKE", "Goddess of Victory: NIKKE"],
-      "versionName": "請填目前版本",
-      "versionEndDate": "",
-      "bannerName": "請填目前角色卡池",
-      "bannerEndDate": "",
-      "bannerEndTime": "23:59",
-      "versionEventDone": false
     }
   ]
 }
