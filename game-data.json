@@ -1,0 +1,14 @@
+{
+  "updatedAt": "2026-06-28T00:00:00+08:00",
+  "games": [
+    {
+      "name": "原神",
+      "versionName": "6.6",
+      "versionEndDate": "2026-07-29",
+      "bannerName": "洛恩 / 瑪薇卡",
+      "bannerEndDate": "2026-06-30",
+      "bannerEndTime": "14:59",
+      "versionEventDone": false
+    }
+  ]
+}
