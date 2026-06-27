@@ -1,5 +1,31 @@
+name: Update game data
+
 on:
-  schedule:
-    - cron: "10 8 * * *"
-      timezone: "Asia/Taipei"
   workflow_dispatch:
+  schedule:
+    - cron: "10 0 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-game-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Update game-data.json
+        run: node scripts/update-game-data.js
+
+      - name: Commit updated game data
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update game data"
+          file_pattern: game-data.json
