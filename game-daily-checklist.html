@@ -863,7 +863,7 @@
     const SYNC_KEY = "game-daily-checklist-sync-v1";
     const THEME_KEY = "game-daily-checklist-theme-v1";
     const SYNC_FILE = "game-daily-checklist-data.json";
-    const APP_VERSION = "v1.15.0";
+    const APP_VERSION = "v1.16.0";
     const $ = (selector) => document.querySelector(selector);
 
     const state = {
@@ -1465,6 +1465,7 @@
     function normalizeExternalGame(item) {
       return {
         name: String(item.name || "").trim(),
+        aliases: Array.isArray(item.aliases) ? item.aliases.map((alias) => String(alias || "").trim()).filter(Boolean) : [],
         versionName: item.versionName || "",
         versionEndDate: item.versionEndDate || "",
         bannerName: item.bannerName || "",
@@ -1472,6 +1473,19 @@
         bannerEndTime: parseResetTime(item.bannerEndTime || "23:59").value,
         versionEventDone: Boolean(item.versionEventDone)
       };
+    }
+
+    function normalizeGameName(value) {
+      return String(value || "").trim().toLowerCase().replace(/\s+/g, "");
+    }
+
+    function sameGameName(left, right) {
+      return normalizeGameName(left) === normalizeGameName(right);
+    }
+
+    function findGameByExternal(external) {
+      const names = [external.name, ...(external.aliases || [])].filter(Boolean);
+      return state.games.find((game) => names.some((name) => sameGameName(game.name, name)));
     }
 
     async function importGameData() {
@@ -1487,7 +1501,7 @@
       const missing = [];
       incoming.forEach((external) => {
         if (!external.name) return;
-        const game = state.games.find((item) => item.name.trim() === external.name);
+        const game = findGameByExternal(external);
         if (!game) {
           missing.push(external.name);
           return;
