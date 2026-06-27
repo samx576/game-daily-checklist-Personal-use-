@@ -1,9 +1,13 @@
 {
-  "updatedAt": "2026-06-28T00:00:00+08:00",
+  "updatedAt": "2026-06-27T22:31:00.719Z",
+  "note": "這份資料由 GitHub Actions 自動更新。之後可以逐款遊戲加入官方資料抓取。",
   "games": [
     {
       "name": "原神",
-      "aliases": ["Genshin Impact", "Genshin"],
+      "aliases": [
+        "Genshin Impact",
+        "Genshin"
+      ],
       "versionName": "請填目前版本",
       "versionEndDate": "",
       "bannerName": "請填目前角色卡池",
@@ -13,7 +17,12 @@
     },
     {
       "name": "崩壞：星穹鐵道",
-      "aliases": ["星鐵", "崩鐵", "Honkai: Star Rail", "HSR"],
+      "aliases": [
+        "星鐵",
+        "崩鐵",
+        "Honkai: Star Rail",
+        "HSR"
+      ],
       "versionName": "請填目前版本",
       "versionEndDate": "",
       "bannerName": "請填目前角色卡池",
@@ -23,7 +32,11 @@
     },
     {
       "name": "絕區零",
-      "aliases": ["絕區", "ZZZ", "Zenless Zone Zero"],
+      "aliases": [
+        "絕區",
+        "ZZZ",
+        "Zenless Zone Zero"
+      ],
       "versionName": "請填目前版本",
       "versionEndDate": "",
       "bannerName": "請填目前角色卡池",
@@ -33,7 +46,10 @@
     },
     {
       "name": "鳴潮",
-      "aliases": ["Wuthering Waves", "WuWa"],
+      "aliases": [
+        "Wuthering Waves",
+        "WuWa"
+      ],
       "versionName": "請填目前版本",
       "versionEndDate": "",
       "bannerName": "請填目前角色卡池",
@@ -43,7 +59,13 @@
     },
     {
       "name": "明日方舟：終末地",
-      "aliases": ["終末地", "明日方舟終末地", "Arknights: Endfield", "Endfield", "Arknights"],
+      "aliases": [
+        "終末地",
+        "明日方舟終末地",
+        "Arknights: Endfield",
+        "Endfield",
+        "Arknights"
+      ],
       "versionName": "請填目前版本",
       "versionEndDate": "",
       "bannerName": "請填目前卡池或活動",
@@ -53,7 +75,9 @@
     },
     {
       "name": "異環",
-      "aliases": ["Ananta"],
+      "aliases": [
+        "Ananta"
+      ],
       "versionName": "請填目前版本",
       "versionEndDate": "",
       "bannerName": "請填目前活動或卡池",
