@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-04T09:10:24.847Z",
+  "updatedAt": "2026-07-05T09:48:18.384Z",
   "note": "這份資料由 GitHub Actions 自動更新。原神目前嘗試從 BWIKI 卡池計時器抓取。",
   "games": [
     {
@@ -11,8 +11,8 @@
       "versionName": "月之八上半",
       "versionEndDate": "",
       "bannerName": "月之八上半：梦见月瑞希 / 茜特菈莉 / 桑多涅 / 七七 / 八重神子 / 赛诺 / 莱欧斯利 / 菲米尼 / 迪奥娜 / 北斗 / 天空之刃 / 祭星者之望 / 超越之匙 / 神乐之真意 / 赤沙之杖 / 金流监督 / 寝正月初晴 / 祭礼弓 / 祭礼残章 / 匣里灭辰 / 雨裁 / 西风剑",
-      "bannerEndDate": "2026-07-22",
-      "bannerEndTime": "17:10",
+      "bannerEndDate": "2026-07-21",
+      "bannerEndTime": "18:48",
       "versionEventDone": false
     },
     {
