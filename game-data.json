@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-23T03:41:40.379Z",
+  "updatedAt": "2026-07-24T03:40:23.562Z",
   "note": "這份資料由 GitHub Actions 自動更新。原神目前嘗試從 BWIKI 卡池計時器抓取。",
   "games": [
     {
@@ -12,7 +12,7 @@
       "versionEndDate": "",
       "bannerName": "月之八下半：雷电将军 / 哥伦比娅 / 赛索斯 / 欧洛伦 / 雅珂达 / 薙草之稻光 / 帷间夜曲 / 西风猎弓 / 西风长枪 / 钟剑 / 祭礼剑 / 乘浪的回旋",
       "bannerEndDate": "2026-08-11",
-      "bannerEndTime": "14:41",
+      "bannerEndTime": "14:40",
       "versionEventDone": false
     },
     {
