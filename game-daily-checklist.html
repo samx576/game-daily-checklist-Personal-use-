@@ -22,8 +22,10 @@
       --decor: rgba(47, 111, 237, 0.16);
       --decor-strong: rgba(47, 111, 237, 0.34);
       --custom-image: none;
-      --custom-overlay: rgba(246, 247, 251, 0.78);
+      --custom-overlay: rgba(246, 247, 251, 0.6);
+      --custom-tint: rgba(47, 111, 237, 0.1);
     }
+
 
     body[data-theme="night"] {
       color-scheme: dark;
@@ -46,6 +48,7 @@
       --custom-overlay: rgba(13, 17, 28, 0.74);
     }
 
+
     body[data-theme="sakura"] {
       --bg: #fff7fb;
       --bg-layer:
@@ -59,6 +62,7 @@
       --decor-strong: rgba(223, 95, 146, 0.34);
       --custom-overlay: rgba(255, 247, 251, 0.78);
     }
+
 
     body[data-theme="arcade"] {
       --bg: #11151f;
@@ -82,15 +86,17 @@
       --custom-overlay: rgba(14, 17, 27, 0.76);
     }
 
+
     body[data-theme="custom"] {
       color-scheme: dark;
       --bg: #101421;
       --bg-layer:
         linear-gradient(var(--custom-overlay), var(--custom-overlay)),
+        linear-gradient(var(--custom-tint), var(--custom-tint)),
         var(--custom-image),
         radial-gradient(circle at 12% 12%, rgba(122, 162, 255, 0.22), transparent 30%),
         linear-gradient(135deg, #131827, #0f1421);
-      --panel: rgba(18, 24, 38, 0.9);
+      --panel: rgba(18, 24, 38, 0.82);
       --text: #f4f7ff;
       --muted: #b6c0d6;
       --line: rgba(220, 228, 246, 0.18);
@@ -104,7 +110,47 @@
       --decor-strong: rgba(143, 177, 255, 0.36);
     }
 
+    body[data-theme="custom"][data-custom-tone="blue"] {
+      --accent: #8fb1ff;
+      --accent-dark: #6d94ec;
+      --custom-tint: rgba(47, 111, 237, 0.1);
+    }
+
+    body[data-theme="custom"][data-custom-tone="pink"] {
+      --accent: #ff94bf;
+      --accent-dark: #e66c9b;
+      --custom-tint: rgba(255, 120, 170, 0.11);
+    }
+
+    body[data-theme="custom"][data-custom-tone="green"] {
+      --accent: #6fe0b0;
+      --accent-dark: #45bf8e;
+      --custom-tint: rgba(63, 210, 158, 0.1);
+    }
+
+    body[data-theme="custom"][data-custom-tone="purple"] {
+      --accent: #b9a1ff;
+      --accent-dark: #9678ef;
+      --custom-tint: rgba(154, 114, 255, 0.1);
+    }
+
+    body[data-theme="custom"][data-custom-tone="gold"] {
+      --accent: #ffd37a;
+      --accent-dark: #e6ad48;
+      --custom-tint: rgba(255, 183, 77, 0.1);
+    }
+
+    body[data-theme="custom"] section,
+    body[data-theme="custom"] .panel,
+    body[data-theme="custom"] .date-box,
+    body[data-theme="custom"] .today-progress-panel {
+      backdrop-filter: blur(12px);
+      border-color: rgba(226, 235, 255, 0.2);
+    }
+
+
     * { box-sizing: border-box; }
+
 
     body {
       margin: 0;
@@ -112,11 +158,12 @@
       background-color: var(--bg);
       background-image: var(--bg-layer);
       background-attachment: fixed;
-      background-size: auto, cover, auto, 100% 100%;
+      background-size: auto, auto, cover, auto, 100% 100%;
       background-position: center;
       color: var(--text);
       min-height: 100vh;
     }
+
 
     body::before,
     body::after {
@@ -125,6 +172,7 @@
       pointer-events: none;
       z-index: 0;
     }
+
 
     body::before {
       width: 180px;
@@ -140,6 +188,7 @@
       opacity: 0.8;
     }
 
+
     body::after {
       left: 26px;
       bottom: 34px;
@@ -153,6 +202,7 @@
         88px 30px 0 -28px var(--decor-strong);
     }
 
+
     main {
       position: relative;
       z-index: 1;
@@ -160,6 +210,7 @@
       margin: 0 auto;
       padding: 22px 0 40px;
     }
+
 
     header {
       display: flex;
@@ -169,6 +220,7 @@
       margin-bottom: 14px;
     }
 
+
     h1 {
       margin: 0 0 6px;
       font-size: clamp(24px, 3vw, 34px);
@@ -176,11 +228,13 @@
       letter-spacing: 0;
     }
 
+
     .subtitle {
       color: var(--muted);
       margin: 0;
       font-size: 15px;
     }
+
 
     .hero-flair {
       display: flex;
@@ -188,6 +242,7 @@
       flex-wrap: wrap;
       margin-top: 12px;
     }
+
 
     .flair-chip {
       display: inline-flex;
@@ -203,12 +258,14 @@
       box-shadow: var(--shadow);
     }
 
+
     .pixel-mark {
       width: 12px;
       height: 12px;
       background: var(--accent);
       clip-path: polygon(50% 0, 62% 34%, 100% 34%, 70% 56%, 82% 100%, 50% 74%, 18% 100%, 30% 56%, 0 34%, 38% 34%);
     }
+
 
     .date-box {
       background: var(--panel);
@@ -220,17 +277,20 @@
       box-shadow: var(--shadow);
     }
 
+
     .date-box span {
       color: var(--muted);
       font-size: 13px;
       display: block;
     }
 
+
     .date-box strong {
       display: block;
       margin-top: 2px;
       font-size: 17px;
     }
+
 
     .reset-countdown {
       display: block;
@@ -240,12 +300,14 @@
       font-weight: 800;
     }
 
+
     .top-nav {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       margin-top: 12px;
     }
+
 
     .nav-tab {
       border: 1px solid var(--line);
@@ -257,11 +319,13 @@
       font-weight: 900;
     }
 
+
     .nav-tab.active {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
     }
+
 
     .today-progress-panel {
       display: grid;
@@ -274,6 +338,7 @@
       box-shadow: var(--shadow);
     }
 
+
     .progress-head {
       display: flex;
       justify-content: space-between;
@@ -282,15 +347,18 @@
       flex-wrap: wrap;
     }
 
+
     .progress-title {
       font-weight: 900;
       font-size: 16px;
     }
 
+
     .progress-percent {
       color: var(--accent);
       font-weight: 900;
     }
+
 
     .progress-bar {
       height: 10px;
@@ -299,20 +367,40 @@
       background: color-mix(in srgb, var(--muted) 18%, var(--panel));
     }
 
+
     .progress-fill {
       width: 0%;
       height: 100%;
       border-radius: inherit;
       background: linear-gradient(90deg, var(--accent), var(--ok));
-      transition: width 220ms ease;
+      transition: width 260ms ease;
     }
+
+    .today-progress-panel.all-clear {
+      animation: completePulse 360ms ease;
+    }
+
+    .completion-message {
+      color: var(--ok);
+      font-size: 13px;
+      font-weight: 900;
+      min-height: 18px;
+    }
+
+    @keyframes completePulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.01); }
+      100% { transform: scale(1); }
+    }
+
 
     .layout {
       display: grid;
-      grid-template-columns: minmax(280px, 0.35fr) minmax(0, 0.65fr);
+      grid-template-columns: minmax(230px, 0.26fr) minmax(0, 0.74fr);
       gap: 18px;
       align-items: start;
     }
+
 
     section, .panel {
       background: var(--panel);
@@ -321,19 +409,62 @@
       box-shadow: var(--shadow);
     }
 
+
     .panel {
-      padding: 18px;
+      padding: 16px;
     }
+
+    .side-panel {
+      display: grid;
+      gap: 12px;
+    }
+
+    .form-toggle {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+    }
+
+    .form-shell {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      overflow: hidden;
+      transition: grid-template-rows 260ms ease, opacity 220ms ease;
+    }
+
+    .form-shell.open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+
+    .form-shell > form {
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .form-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
 
     h2 {
       margin: 0 0 14px;
       font-size: 20px;
     }
 
+
     form {
       display: grid;
       gap: 10px;
     }
+
 
     .advanced-settings {
       border: 1px solid var(--line);
@@ -342,6 +473,7 @@
       background: color-mix(in srgb, var(--accent) 5%, var(--panel));
     }
 
+
     .advanced-settings summary {
       cursor: pointer;
       color: var(--text);
@@ -349,11 +481,13 @@
       font-weight: 900;
     }
 
+
     .advanced-grid {
       display: grid;
       gap: 10px;
       margin-top: 10px;
     }
+
 
     label {
       color: var(--muted);
@@ -361,9 +495,11 @@
       font-weight: 600;
     }
 
+
     input, textarea, select, button {
       font: inherit;
     }
+
 
     input, textarea, select {
       width: 100%;
@@ -374,10 +510,12 @@
       color: var(--text);
     }
 
+
     textarea {
       min-height: 86px;
       resize: vertical;
     }
+
 
     .hint {
       color: var(--muted);
@@ -386,10 +524,12 @@
       margin: -4px 0 4px;
     }
 
+
     .check-group {
       display: grid;
       gap: 8px;
     }
+
 
     .check-line {
       display: flex;
@@ -400,11 +540,13 @@
       font-weight: 600;
     }
 
+
     .check-line input {
       width: 18px;
       height: 18px;
       accent-color: var(--accent);
     }
+
 
     .actions {
       display: flex;
@@ -413,12 +555,14 @@
       margin-top: 4px;
     }
 
+
     .field-row {
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 8px;
       align-items: end;
     }
+
 
     button {
       border: 0;
@@ -430,21 +574,27 @@
       font-weight: 700;
     }
 
+
     button:hover { background: var(--accent-dark); }
+
 
     button.secondary {
       background: color-mix(in srgb, var(--accent) 12%, var(--panel));
       color: var(--text);
     }
 
+
     button.secondary:hover { background: color-mix(in srgb, var(--accent) 18%, var(--panel)); }
+
 
     button.danger {
       background: color-mix(in srgb, var(--danger) 14%, var(--panel));
       color: var(--danger);
     }
 
+
     button.danger:hover { background: color-mix(in srgb, var(--danger) 20%, var(--panel)); }
+
 
     .toolbar {
       display: flex;
@@ -455,6 +605,7 @@
       flex-wrap: wrap;
     }
 
+
     .summary {
       display: flex;
       gap: 10px;
@@ -462,45 +613,53 @@
       align-items: center;
     }
 
+
     .pill {
       border: 1px solid var(--line);
       border-radius: 8px;
       background: color-mix(in srgb, var(--accent) 10%, var(--panel));
       color: var(--muted);
-      padding: 8px 10px;
-      font-size: 12px;
+      padding: 6px 9px;
+      font-size: 11px;
       font-weight: 800;
-      min-width: 78px;
-      min-height: 50px;
+      min-width: 68px;
+      min-height: 42px;
       display: grid;
       gap: 2px;
       justify-items: start;
       cursor: pointer;
     }
 
+
     .pill.todo { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, var(--panel)); }
     .pill.done { color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, var(--panel)); }
     .pill.resting { color: var(--muted); background: color-mix(in srgb, var(--muted) 14%, var(--panel)); }
 
+
     .pill strong {
       color: var(--text);
-      font-size: 22px;
+      font-size: 19px;
       line-height: 1;
     }
+
 
     .pill.active {
       outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
       outline-offset: 1px;
+      background: color-mix(in srgb, var(--accent) 18%, var(--panel));
     }
+
 
     .pill.done.all-clear {
       animation: doneGlow 1.8s ease-in-out infinite alternate;
     }
 
+
     @keyframes doneGlow {
       from { box-shadow: 0 0 0 rgba(22, 138, 87, 0); }
       to { box-shadow: 0 0 18px color-mix(in srgb, var(--ok) 34%, transparent); }
     }
+
 
     .filters {
       display: flex;
@@ -508,10 +667,12 @@
       align-items: center;
     }
 
+
     .filters select {
       min-width: 138px;
       padding: 8px 10px;
     }
+
 
     .quick-filters {
       display: flex;
@@ -521,6 +682,7 @@
       border-bottom: 1px solid var(--line);
     }
 
+
     .quick-filter {
       min-height: 38px;
       padding: 8px 12px;
@@ -528,21 +690,25 @@
       color: var(--text);
     }
 
+
     .quick-filter.active {
       background: var(--accent);
       color: #fff;
     }
+
 
     .game-list {
       display: grid;
       gap: 0;
     }
 
+
     .empty {
       padding: 42px 18px;
       text-align: center;
       color: var(--muted);
     }
+
 
     .game-row {
       display: grid;
@@ -552,13 +718,18 @@
       padding: 15px 14px;
       border-top: 1px solid var(--line);
       border-left: 4px solid transparent;
+      background: color-mix(in srgb, var(--panel) 92%, var(--accent) 4%);
+      transition: opacity 220ms ease, background 220ms ease, transform 220ms ease;
     }
 
+
     .game-row:first-child { border-top: 0; }
+
 
     .game-row:not(.done-row) {
       border-left-color: var(--accent);
     }
+
 
     .game-row.drag-over {
       outline: 2px dashed var(--accent);
@@ -566,9 +737,11 @@
       background: color-mix(in srgb, var(--accent) 8%, var(--panel));
     }
 
+
     .game-row.resting-row {
       opacity: 0.7;
     }
+
 
     .game-row.resting-row .game-name::after {
       content: "休眠中";
@@ -581,6 +754,7 @@
       background: color-mix(in srgb, var(--muted) 14%, var(--panel));
       vertical-align: middle;
     }
+
 
     .drag-handle {
       width: 32px;
@@ -597,9 +771,11 @@
       touch-action: none;
     }
 
+
     .drag-handle:active {
       cursor: grabbing;
     }
+
 
     .check {
       width: 24px;
@@ -608,12 +784,14 @@
       accent-color: var(--accent);
     }
 
+
     .game-name {
       font-weight: 800;
       font-size: 17px;
       margin-bottom: 4px;
       overflow-wrap: anywhere;
     }
+
 
     .game-title-wrap {
       display: flex;
@@ -622,18 +800,29 @@
       min-width: 0;
     }
 
+
     .game-badge {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
       border-radius: 8px;
       display: grid;
       place-items: center;
       flex: 0 0 auto;
       color: #fff;
       background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      object-fit: cover;
+      overflow: hidden;
       font-weight: 900;
       box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 20%, transparent);
     }
+
+    .game-badge img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
 
     .tasks {
       color: var(--muted);
@@ -643,11 +832,13 @@
       overflow-wrap: anywhere;
     }
 
+
     .task-sections {
       display: grid;
       gap: 8px;
       margin-top: 8px;
     }
+
 
     .task-section {
       border: 1px solid var(--line);
@@ -655,6 +846,7 @@
       padding: 9px 10px;
       background: color-mix(in srgb, var(--panel) 84%, var(--accent) 6%);
     }
+
 
     .task-section-head {
       display: flex;
@@ -664,11 +856,13 @@
       margin-bottom: 5px;
     }
 
+
     .task-title {
       font-size: 13px;
       font-weight: 800;
       color: var(--text);
     }
+
 
     .task-toggle {
       display: inline-flex;
@@ -680,15 +874,18 @@
       white-space: nowrap;
     }
 
+
     .task-toggle input {
       width: 18px;
       height: 18px;
       accent-color: var(--accent);
     }
 
+
     .task-section.done .tasks {
       text-decoration: line-through;
     }
+
 
     .task-progress {
       display: flex;
@@ -700,6 +897,7 @@
       font-weight: 800;
     }
 
+
     .task-mini-bar {
       flex: 1;
       height: 6px;
@@ -708,12 +906,56 @@
       background: color-mix(in srgb, var(--muted) 16%, var(--panel));
     }
 
+
     .task-mini-fill {
       width: 0%;
       height: 100%;
       border-radius: inherit;
       background: linear-gradient(90deg, var(--accent), var(--ok));
+      transition: width 260ms ease;
     }
+
+    .urgency-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      width: fit-content;
+      margin-top: 8px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: var(--text);
+      background: color-mix(in srgb, var(--warn) 16%, var(--panel));
+      border: 1px solid color-mix(in srgb, var(--warn) 28%, var(--line));
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .icon-preview-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-preview {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: #fff;
+      font-weight: 900;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .icon-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
 
     .completion-line {
       display: none;
@@ -723,6 +965,7 @@
       font-weight: 900;
     }
 
+
     .meta {
       display: flex;
       gap: 8px;
@@ -731,6 +974,7 @@
       margin-top: 8px;
     }
 
+
     .tag {
       font-size: 12px;
       color: var(--muted);
@@ -738,6 +982,7 @@
       border-radius: 999px;
       padding: 4px 8px;
     }
+
 
     .info-lines {
       display: grid;
@@ -748,19 +993,23 @@
       line-height: 1.45;
     }
 
+
     .info-lines strong {
       color: var(--text);
     }
+
 
     .info-lines .soon {
       color: var(--warn);
       font-weight: 800;
     }
 
+
     .info-lines .expired {
       color: var(--danger);
       font-weight: 800;
     }
+
 
     .quick-check {
       display: inline-flex;
@@ -772,11 +1021,13 @@
       font-weight: 800;
     }
 
+
     .quick-check input {
       width: 18px;
       height: 18px;
       accent-color: var(--accent);
     }
+
 
     .weekly-record {
       margin-top: 8px;
@@ -788,14 +1039,17 @@
       line-height: 1.45;
     }
 
+
     .weekly-record strong {
       color: var(--text);
     }
+
 
     .row-actions {
       display: flex;
       gap: 7px;
     }
+
 
     .icon-button {
       width: 36px;
@@ -808,8 +1062,10 @@
       font-weight: 900;
     }
 
+
     .icon-button:hover { background: color-mix(in srgb, var(--accent) 16%, var(--panel)); }
     .icon-button.delete { color: var(--danger); }
+
 
     .done-row .game-name,
     .done-row .tasks {
@@ -817,11 +1073,13 @@
       text-decoration: line-through;
     }
 
+
     .done-row {
       padding-block: 10px;
       border-left-color: var(--ok);
       background: color-mix(in srgb, var(--ok) 5%, var(--panel));
     }
+
 
     .done-row .task-sections,
     .done-row .info-lines,
@@ -830,15 +1088,28 @@
       display: none;
     }
 
+    .done-row.expanded-done .task-sections,
+    .done-row.expanded-done .info-lines,
+    .done-row.expanded-done .weekly-record {
+      display: grid;
+    }
+
+    .done-row.expanded-done .quick-check {
+      display: inline-flex;
+    }
+
+
     .done-row .completion-line {
       display: block;
     }
+
 
     .export-box {
       margin-top: 14px;
       display: grid;
       gap: 10px;
     }
+
 
     .sync-box {
       margin-top: 18px;
@@ -848,10 +1119,12 @@
       gap: 10px;
     }
 
+
     .sync-box h3 {
       margin: 0;
       font-size: 16px;
     }
+
 
     .theme-preview {
       min-height: 84px;
@@ -859,6 +1132,7 @@
       border-radius: 8px;
       background:
         linear-gradient(var(--custom-overlay), var(--custom-overlay)),
+        linear-gradient(var(--custom-tint), var(--custom-tint)),
         var(--custom-image),
         linear-gradient(135deg, rgba(47, 111, 237, 0.18), rgba(22, 138, 87, 0.12));
       background-size: cover;
@@ -870,6 +1144,7 @@
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
     }
 
+
     .sync-status,
     .app-version {
       color: var(--muted);
@@ -878,9 +1153,11 @@
       min-height: 18px;
     }
 
+
     .app-version {
       margin-top: 8px;
     }
+
 
     .toast {
       position: fixed;
@@ -898,7 +1175,9 @@
       font-size: 14px;
     }
 
+
     .toast.show { opacity: 1; }
+
 
     @media (max-width: 820px) {
       header {
@@ -906,18 +1185,22 @@
         align-items: start;
       }
 
+
       .date-box {
         text-align: left;
         width: 100%;
       }
 
+
       .layout {
         grid-template-columns: 1fr;
       }
 
+
       .game-row {
         grid-template-columns: auto 1fr;
       }
+
 
       .row-actions {
         grid-column: 2;
@@ -943,6 +1226,7 @@
       </div>
     </header>
 
+
     <div class="today-progress-panel">
       <div class="progress-head">
         <span class="progress-title" id="heroProgressText">今日 0 / 0 完成</span>
@@ -951,16 +1235,35 @@
       <div class="progress-bar" aria-hidden="true">
         <div class="progress-fill" id="heroProgressFill"></div>
       </div>
+      <div class="completion-message" id="heroCompletionMessage"></div>
     </div>
 
+
     <div class="layout">
-      <aside class="panel">
-        <h2 id="formTitle">新增遊戲</h2>
+      <aside class="panel side-panel">
+        <button class="form-toggle" type="button" id="formToggleButton">
+          <span>＋ 新增遊戲</span>
+          <span id="formToggleHint">展開</span>
+        </button>
+        <div class="form-shell" id="formShell">
         <form id="gameForm">
+          <div class="form-title-row">
+            <h2 id="formTitle">新增遊戲</h2>
+            <button class="secondary" type="button" id="collapseFormButton">收合</button>
+          </div>
           <input type="hidden" id="editingId">
           <div>
             <label for="gameName">遊戲名稱</label>
             <input id="gameName" autocomplete="off" placeholder="例如：原神、星穹鐵道、FGO" required>
+          </div>
+          <div>
+            <label for="gameIconFile">遊戲 Icon</label>
+            <div class="icon-preview-row">
+              <span class="icon-preview" id="gameIconPreview">?</span>
+              <input id="gameIconFile" type="file" accept="image/*">
+            </div>
+            <input type="hidden" id="gameIconUrl">
+            <p class="hint">可留空；手機上主要用來快速認出遊戲。</p>
           </div>
           <div>
             <label for="resetTime">每日重置時間</label>
@@ -1040,12 +1343,15 @@
             <button class="secondary" type="button" id="cancelEditButton" hidden>取消編輯</button>
           </div>
         </form>
+        </div>
+
 
         <div class="export-box">
           <button class="secondary" type="button" id="copyTodoButton">複製未完成清單</button>
           <button class="secondary" type="button" id="resetCurrentButton">重置目前勾選</button>
           <button class="danger" type="button" id="clearAllButton">清空全部資料</button>
         </div>
+
 
         <div class="sync-box">
           <h3>外觀設定</h3>
@@ -1067,12 +1373,28 @@
             <label for="customThemeFile">或上傳本機圖片</label>
             <input id="customThemeFile" type="file" accept="image/*">
           </div>
+          <div>
+            <label for="customThemeTone">自訂主色</label>
+            <select id="customThemeTone">
+              <option value="blue">星藍</option>
+              <option value="pink">櫻粉</option>
+              <option value="green">薄荷綠</option>
+              <option value="purple">幻紫</option>
+              <option value="gold">暖金</option>
+            </select>
+          </div>
+          <div>
+            <label for="customThemeVisibility">背景圖片清晰度</label>
+            <input id="customThemeVisibility" type="range" min="35" max="85" value="60">
+            <p class="hint" id="customThemeVisibilityLabel">目前：60%，越高圖片越明顯。</p>
+          </div>
           <div class="actions">
             <button class="secondary" type="button" id="applyCustomThemeButton">套用自訂背景</button>
             <button class="secondary" type="button" id="clearCustomThemeButton">清除背景圖片</button>
           </div>
           <div class="theme-preview" id="themePreview">背景預覽</div>
         </div>
+
 
         <div class="sync-box">
           <h3>遊戲資料匯入</h3>
@@ -1082,6 +1404,7 @@
           </div>
           <div class="sync-status" id="gameDataStatus">尚未匯入遊戲資料。</div>
         </div>
+
 
         <div class="sync-box">
           <h3>雲端同步</h3>
@@ -1114,6 +1437,7 @@
         </div>
         <div class="app-version" id="appVersionLabel"></div>
       </aside>
+
 
       <section>
         <div class="toolbar">
@@ -1151,16 +1475,21 @@
     </div>
   </main>
 
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 
   <script>
     const STORAGE_KEY = "game-daily-checklist-v1";
     const SYNC_KEY = "game-daily-checklist-sync-v1";
     const THEME_KEY = "game-daily-checklist-theme-v1";
     const THEME_IMAGE_KEY = "game-daily-checklist-theme-image-v1";
+    const THEME_VISIBILITY_KEY = "game-daily-checklist-theme-visibility-v1";
+    const THEME_TONE_KEY = "game-daily-checklist-theme-tone-v1";
     const SYNC_FILE = "game-daily-checklist-data.json";
-    const APP_VERSION = "v1.20.0";
+    const APP_VERSION = "v1.21.0";
     const $ = (selector) => document.querySelector(selector);
+
 
     const state = {
       games: [],
@@ -1177,9 +1506,13 @@
       filter: "today",
       theme: "clean",
       themeImage: "",
+      themeVisibility: 60,
+      themeTone: "blue",
+      formOpen: false,
       today: new Date().toLocaleDateString("sv-SE"),
       week: getWeekKey(new Date())
     };
+
 
     function refreshCurrentDate() {
       const now = new Date();
@@ -1192,6 +1525,7 @@
       }).format(now);
     }
 
+
     function nextResetSummary(games) {
       const now = new Date();
       const candidates = games.map((game) => {
@@ -1202,6 +1536,7 @@
         return { game, next, diff: next - now };
       });
 
+
       if (!candidates.length) return "尚無重置";
       const nearest = candidates.sort((a, b) => a.diff - b.diff)[0];
       const totalMinutes = Math.max(0, Math.ceil(nearest.diff / 60000));
@@ -1210,20 +1545,26 @@
       return `距離重置 ${hours}h ${String(minutes).padStart(2, "0")}m`;
     }
 
+
     function updateHeroProgress(activeGames) {
       const dailyGames = activeGames.filter((game) => hasTask(game, "daily"));
       const doneDaily = dailyGames.filter((game) => isTaskDone(game, "daily")).length;
       const percent = dailyGames.length ? Math.round((doneDaily / dailyGames.length) * 100) : 0;
-      $("#heroProgressText").textContent = `今日 ${doneDaily} / ${dailyGames.length} 完成`;
+      const allClear = dailyGames.length > 0 && doneDaily === dailyGames.length;
+      $("#heroProgressText").textContent = allClear ? "今日任務全部完成" : `今日 ${doneDaily} / ${dailyGames.length} 完成`;
       $("#heroProgressPercent").textContent = `${percent}%`;
       $("#heroProgressFill").style.width = `${percent}%`;
+      $("#heroCompletionMessage").textContent = allClear ? "✨ 今日任務全部完成" : "";
+      $(".today-progress-panel").classList.toggle("all-clear", allClear);
       $("#resetCountdown").textContent = nextResetSummary(activeGames);
     }
+
 
     function setStat(id, value, label) {
       const node = $(`#${id}`);
       node.innerHTML = `<strong>${value}</strong><span>${label}</span>`;
     }
+
 
     function startTimeHeartbeat() {
       window.setInterval(() => {
@@ -1233,6 +1574,7 @@
         if (state.today !== previousToday) updateSyncUi();
       }, 60000);
 
+
       document.addEventListener("visibilitychange", () => {
         if (document.visibilityState !== "visible") return;
         refreshCurrentDate();
@@ -1241,29 +1583,71 @@
       });
     }
 
+
     function loadTheme() {
       const saved = localStorage.getItem(THEME_KEY);
       state.theme = ["clean", "night", "sakura", "arcade", "custom"].includes(saved) ? saved : "clean";
       state.themeImage = localStorage.getItem(THEME_IMAGE_KEY) || "";
+      state.themeVisibility = clampThemeVisibility(localStorage.getItem(THEME_VISIBILITY_KEY) || 60);
+      state.themeTone = ["blue", "pink", "green", "purple", "gold"].includes(localStorage.getItem(THEME_TONE_KEY))
+        ? localStorage.getItem(THEME_TONE_KEY)
+        : "blue";
       applyTheme();
     }
 
+
+    function clampThemeVisibility(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return 60;
+      return Math.min(85, Math.max(35, Math.round(number)));
+    }
+
+
+    function customOverlayColor() {
+      const alpha = Math.max(0.26, Math.min(0.72, (100 - state.themeVisibility) / 100));
+      return `rgba(8, 12, 22, ${alpha.toFixed(2)})`;
+    }
+
+
     function applyTheme() {
       document.body.dataset.theme = state.theme;
+      document.body.dataset.customTone = state.themeTone;
       document.body.style.setProperty("--custom-image", state.themeImage ? `url("${state.themeImage.replaceAll('"', "%22")}")` : "none");
+      document.body.style.setProperty("--custom-overlay", customOverlayColor());
       const select = $("#themeSelect");
       if (select) select.value = state.theme;
       const input = $("#customThemeUrl");
       if (input && !state.themeImage.startsWith("data:")) input.value = state.themeImage;
+      const visibilityInput = $("#customThemeVisibility");
+      if (visibilityInput) visibilityInput.value = state.themeVisibility;
+      const visibilityLabel = $("#customThemeVisibilityLabel");
+      if (visibilityLabel) visibilityLabel.textContent = `目前：${state.themeVisibility}%，越高圖片越明顯。`;
+      const toneSelect = $("#customThemeTone");
+      if (toneSelect) toneSelect.value = state.themeTone;
       const preview = $("#themePreview");
       if (preview) preview.textContent = state.themeImage ? "背景預覽" : "尚未設定圖片";
     }
+
 
     function saveTheme(theme) {
       state.theme = ["clean", "night", "sakura", "arcade", "custom"].includes(theme) ? theme : "clean";
       localStorage.setItem(THEME_KEY, state.theme);
       applyTheme();
     }
+
+
+    function saveCustomThemeOptions({ visibility, tone } = {}) {
+      if (visibility !== undefined) state.themeVisibility = clampThemeVisibility(visibility);
+      if (tone && ["blue", "pink", "green", "purple", "gold"].includes(tone)) state.themeTone = tone;
+      localStorage.setItem(THEME_VISIBILITY_KEY, state.themeVisibility);
+      localStorage.setItem(THEME_TONE_KEY, state.themeTone);
+      if (state.themeImage) {
+        state.theme = "custom";
+        localStorage.setItem(THEME_KEY, state.theme);
+      }
+      applyTheme();
+    }
+
 
     function saveCustomThemeImage(value) {
       state.themeImage = value || "";
@@ -1273,6 +1657,7 @@
       applyTheme();
     }
 
+
     function getWeekKey(date) {
       const current = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
       const day = current.getUTCDay() || 7;
@@ -1281,6 +1666,7 @@
       const weekNo = Math.ceil((((current - yearStart) / 86400000) + 1) / 7);
       return `${current.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
     }
+
 
     function parseResetTime(value) {
       const match = /^(\d{2}):(\d{2})$/.exec(value || "");
@@ -1294,6 +1680,7 @@
       };
     }
 
+
     function gameCycleDate(game, now = new Date()) {
       const reset = parseResetTime(game.resetTime);
       const cycle = new Date(now);
@@ -1303,13 +1690,16 @@
       return cycle;
     }
 
+
     function gameCycleDateKey(game) {
       return gameCycleDate(game).toLocaleDateString("sv-SE");
     }
 
+
     function gameWeekKey(game) {
       return getWeekKey(gameCycleDate(game));
     }
+
 
     function addDays(date, days) {
       const result = new Date(date);
@@ -1317,19 +1707,23 @@
       return result;
     }
 
+
     function dateKey(date) {
       return date.toLocaleDateString("sv-SE");
     }
 
+
     function weekdayLabel(date) {
       return new Intl.DateTimeFormat("zh-TW", { weekday: "short", month: "numeric", day: "numeric" }).format(date);
     }
+
 
     function addDaysToToday(days) {
       const date = new Date(`${state.today}T00:00:00`);
       date.setDate(date.getDate() + days);
       return date.toLocaleDateString("sv-SE");
     }
+
 
     function normalizeGame(game) {
       if (game.dailyTasks === undefined && game.weeklyTasks === undefined) {
@@ -1347,6 +1741,8 @@
       game.hasMonthlyCard = Boolean(game.hasMonthlyCard);
       game.hasBattlePass = Boolean(game.hasBattlePass);
       game.isResting = Boolean(game.isResting);
+      game.iconUrl = game.iconUrl || "";
+      game.expandedDone = Boolean(game.expandedDone);
       game.monthlyCardEndDate = game.monthlyCardEndDate || "";
       game.versionName = game.versionName || "";
       game.versionEndDate = game.versionEndDate || "";
@@ -1358,18 +1754,22 @@
       return game;
     }
 
+
     function completionKey(game, type) {
       return type === "weekly" ? `W:${gameWeekKey(game)}` : `D:${gameCycleDateKey(game)}`;
     }
+
 
     function legacyCompletionKey(game, type) {
       return type === "weekly" ? gameWeekKey(game) : gameCycleDateKey(game);
     }
 
+
     function hasTask(game, type) {
       const value = type === "weekly" ? game.weeklyTasks : game.dailyTasks;
       return Boolean(value && value.trim());
     }
+
 
     function isTaskDone(game, type) {
       if (!hasTask(game, type)) return true;
@@ -1377,38 +1777,47 @@
       return completions.includes(completionKey(game, type)) || completions.includes(legacyCompletionKey(game, type));
     }
 
+
     function isGameDone(game) {
       return isTaskDone(game, "daily") && isTaskDone(game, "weekly") && !isActivityTodo(game);
     }
+
 
     function isActiveGame(game) {
       return !game.isResting;
     }
 
+
     function isDailyTodo(game) {
       return hasTask(game, "daily") && !isTaskDone(game, "daily");
     }
+
 
     function isWeeklyTodo(game) {
       return hasTask(game, "weekly") && !isTaskDone(game, "weekly");
     }
 
+
     function tracksActivity(game) {
       return Boolean(game.versionName || game.versionEndDate || game.versionEventDone);
     }
+
 
     function isActivityTodo(game) {
       return tracksActivity(game) && !game.versionEventDone;
     }
 
+
     function hasAnyTask(game) {
       return hasTask(game, "daily") || hasTask(game, "weekly");
     }
+
 
     function taskStatusLabel(type, done) {
       if (type === "weekly") return done ? "本週已完成" : "本週未完成";
       return done ? "今天已完成" : "今天未完成";
     }
+
 
     function pendingLabels(game) {
       const labels = [];
@@ -1421,12 +1830,14 @@
       return labels;
     }
 
+
     function paidTags(game) {
       const tags = [];
       if (game.hasMonthlyCard) tags.push("月卡");
       if (game.hasBattlePass) tags.push("通行證");
       return tags;
     }
+
 
     function daysUntil(dateText) {
       if (!dateText) return "";
@@ -1439,6 +1850,16 @@
       return `已結束 ${Math.abs(days)} 天`;
     }
 
+
+    function daysUntilNumber(dateText) {
+      if (!dateText) return Infinity;
+      const target = new Date(`${dateText}T00:00:00`);
+      if (Number.isNaN(target.getTime())) return Infinity;
+      const today = new Date(`${state.today}T00:00:00`);
+      return Math.ceil((target - today) / 86400000);
+    }
+
+
     function dayStatusClass(dateText) {
       if (!dateText) return "";
       const target = new Date(`${dateText}T00:00:00`);
@@ -1449,6 +1870,7 @@
       if (days <= 3) return "soon";
       return "";
     }
+
 
     function timeUntil(dateText, timeText) {
       if (!dateText) return "";
@@ -1470,6 +1892,7 @@
       return `已結束 ${detail}`;
     }
 
+
     function timeStatusClass(dateText, timeText) {
       if (!dateText) return "";
       const time = parseResetTime(timeText || "23:59").value;
@@ -1480,6 +1903,7 @@
       if (diff <= 3 * 86400000) return "soon";
       return "";
     }
+
 
     function urgencyScore(game) {
       let score = 0;
@@ -1492,14 +1916,86 @@
       return score;
     }
 
+
     function todaySuggestedGames() {
       return state.games
         .filter(isActiveGame)
-        .map((game, index) => ({ game, index, score: urgencyScore(game) }))
+        .map((game, index) => ({ game, index, score: urgencyScore(game), urgency: urgencyRank(game) }))
         .filter((item) => item.score > 0)
-        .sort((a, b) => b.score - a.score || a.index - b.index)
+        .sort((a, b) => b.urgency - a.urgency || b.score - a.score || a.index - b.index)
         .map((item) => item.game);
     }
+
+
+    function urgencyRank(game) {
+      const bannerDays = game.bannerEndDate ? Number(daysUntilNumber(game.bannerEndDate)) : Infinity;
+      const versionDays = game.versionEndDate ? Number(daysUntilNumber(game.versionEndDate)) : Infinity;
+      const minDays = Math.min(bannerDays, versionDays);
+      if (minDays <= 1) return 50;
+      if (minDays <= 3) return 40;
+
+      const reset = parseResetTime(game.resetTime);
+      const now = new Date();
+      const next = new Date(now);
+      next.setHours(reset.hours, reset.minutes, 0, 0);
+      if (next <= now) next.setDate(next.getDate() + 1);
+      if ((next - now) / 60000 <= 120 && isDailyTodo(game)) return 30;
+      if (isDailyTodo(game)) return 20;
+      if (isActivityTodo(game)) return 15;
+      if (isWeeklyTodo(game)) return 10;
+      return 0;
+    }
+
+
+    function urgencyBadge(game) {
+      const bannerDays = game.bannerEndDate ? Number(daysUntilNumber(game.bannerEndDate)) : Infinity;
+      const versionDays = game.versionEndDate ? Number(daysUntilNumber(game.versionEndDate)) : Infinity;
+      const minDays = Math.min(bannerDays, versionDays);
+      if (minDays <= 1) return "🔥 活動或卡池剩 1 天內";
+      if (minDays <= 3) return "⚠️ 活動或卡池快結束";
+
+      const reset = parseResetTime(game.resetTime);
+      const now = new Date();
+      const next = new Date(now);
+      next.setHours(reset.hours, reset.minutes, 0, 0);
+      if (next <= now) next.setDate(next.getDate() + 1);
+      if ((next - now) / 60000 <= 120 && isDailyTodo(game)) return "⚠️ 即將重置";
+      if (isDailyTodo(game)) return "每日任務";
+      if (isActivityTodo(game)) return "活動未完成";
+      if (isWeeklyTodo(game)) return "每週任務";
+      return "";
+    }
+
+
+    function gameIconMarkup(game) {
+      if (game.iconUrl) return `<span class="game-badge"><img src="${escapeHtml(game.iconUrl)}" alt=""></span>`;
+      return `<span class="game-badge" aria-hidden="true">${escapeHtml(game.name.slice(0, 1) || "?")}</span>`;
+    }
+
+
+    function updateFormOpen() {
+      const shell = $("#formShell");
+      const toggle = $("#formToggleButton");
+      const hint = $("#formToggleHint");
+      if (!shell || !toggle || !hint) return;
+      shell.classList.toggle("open", state.formOpen);
+      toggle.querySelector("span").textContent = state.formOpen ? "− 收合新增遊戲" : "＋ 新增遊戲";
+      hint.textContent = state.formOpen ? "收合" : "展開";
+    }
+
+
+    function setFormOpen(open) {
+      state.formOpen = open;
+      updateFormOpen();
+    }
+
+
+    function updateIconPreview(value) {
+      const preview = $("#gameIconPreview");
+      if (!preview) return;
+      preview.innerHTML = value ? `<img src="${escapeHtml(value)}" alt="">` : "?";
+    }
+
 
     function updateQuickFilterButtons() {
       document.querySelectorAll("[data-filter]").forEach((button) => {
@@ -1508,9 +2004,11 @@
       $("#filterMode").value = state.filter;
     }
 
+
     function statusSpan(text, className) {
       return className ? `<span class="${className}">${text}</span>` : text;
     }
+
 
     function infoLines(game) {
       const lines = [];
@@ -1535,6 +2033,7 @@
       return lines.length ? `<div class="info-lines">${lines.join("")}</div>` : "";
     }
 
+
     function plainInfoLines(game) {
       const lines = [];
       if (game.hasMonthlyCard || game.monthlyCardEndDate) {
@@ -1556,6 +2055,7 @@
       return lines;
     }
 
+
     function weeklyDailyRecord(game) {
       if (!hasTask(game, "daily")) return "";
       const cycle = gameCycleDate(game);
@@ -1575,6 +2075,7 @@
       return `<div class="weekly-record"><strong>本週每日：</strong>${doneCount}/${days.length} 天完成，${missedText}</div>`;
     }
 
+
     function plainWeeklyDailyRecord(game) {
       if (!hasTask(game, "daily")) return "";
       const cycle = gameCycleDate(game);
@@ -1593,6 +2094,7 @@
       return `本週每日：${doneCount}/${days.length} 天完成${missed.length ? `，未完成：${missed.join("、")}` : "，本週目前沒有漏掉"}`;
     }
 
+
     function filteredTodoGames() {
       const activeGames = state.games.filter(isActiveGame);
       if (state.filter === "daily-todo") return activeGames.filter(isDailyTodo);
@@ -1602,6 +2104,7 @@
       return activeGames.filter((game) => !isGameDone(game));
     }
 
+
     function load() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
@@ -1609,22 +2112,42 @@
         return;
       }
 
+
       try {
         const parsed = JSON.parse(raw);
         state.games = Array.isArray(parsed.games) ? parsed.games.map(normalizeGame) : [];
       } catch {
         state.games = [];
       }
+      clearGenshinBannerOnce();
     }
+
+
+    function clearGenshinBannerOnce() {
+      const key = "game-daily-checklist-clear-genshin-banner-v1";
+      if (localStorage.getItem(key)) return;
+      const genshin = state.games.find((game) => sameGameName(game.name, "原神") || sameGameName(game.name, "Genshin Impact"));
+      if (genshin) {
+        genshin.bannerName = "請填目前角色卡池";
+        genshin.bannerEndDate = "";
+        genshin.bannerEndTime = "17:59";
+        genshin.updatedAt = state.today;
+        saveLocalOnly();
+      }
+      localStorage.setItem(key, "done");
+    }
+
 
     function save() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ games: state.games }));
       scheduleCloudPush();
     }
 
+
     function saveLocalOnly() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ games: state.games }));
     }
+
 
     function loadSyncSettings() {
       try {
@@ -1655,6 +2178,7 @@
       }
     }
 
+
     function saveSyncSettings() {
       state.sync.token = $("#syncToken").value.trim();
       state.sync.gistId = $("#syncGistId").value.trim();
@@ -1665,9 +2189,11 @@
       updateSyncUi();
     }
 
+
     function persistSyncSettings() {
       localStorage.setItem(SYNC_KEY, JSON.stringify(state.sync));
     }
+
 
     function exportData() {
       return {
@@ -1678,6 +2204,7 @@
       };
     }
 
+
     function importData(data) {
       if (!data || !Array.isArray(data.games)) {
         throw new Error("雲端資料格式不正確。");
@@ -1686,6 +2213,7 @@
       saveLocalOnly();
       render();
     }
+
 
     function updateSyncUi(message) {
       $("#syncToken").value = state.sync.token || "";
@@ -1702,9 +2230,11 @@
       $("#syncStatus").textContent = status;
     }
 
+
     function updateAppVersionUi() {
       $("#appVersionLabel").textContent = `目前版本：${APP_VERSION}`;
     }
+
 
     async function requestGist(path, options = {}) {
       if (!state.sync.token) throw new Error("請先填 GitHub Token。");
@@ -1718,13 +2248,16 @@
         }
       });
 
+
       if (!response.ok) {
         const text = await response.text();
         throw new Error(`GitHub 回應 ${response.status}：${text.slice(0, 120)}`);
       }
 
+
       return response.json();
     }
+
 
     function parseCloudData(gist) {
       const file = gist.files?.[SYNC_FILE];
@@ -1732,16 +2265,19 @@
       return JSON.parse(file.content);
     }
 
+
     function isRemoteNewer(remoteUpdatedAt) {
       if (!remoteUpdatedAt) return false;
       const known = state.sync.lastRemoteUpdatedAt || state.sync.lastPulledAt || state.sync.lastPushedAt || "";
       return Boolean(known) && new Date(remoteUpdatedAt) > new Date(known);
     }
 
+
     async function fetchCloudData() {
       const gist = await requestGist(`/gists/${state.sync.gistId}`, { method: "GET" });
       return parseCloudData(gist);
     }
+
 
     async function pushCloudSync(showDone = true, options = {}) {
       if (!state.sync.enabled) return;
@@ -1762,6 +2298,7 @@
         }
       };
 
+
       if (!state.sync.gistId) {
         const gist = await requestGist("/gists", {
           method: "POST",
@@ -1776,12 +2313,14 @@
         });
       }
 
+
       state.sync.lastPushedAt = new Date().toISOString();
       state.sync.lastRemoteUpdatedAt = JSON.parse(body.files[SYNC_FILE].content).updatedAt;
       persistSyncSettings();
       if (showDone) showToast("已上傳同步");
       updateSyncUi(`同步完成：${new Date().toLocaleTimeString("zh-TW")}`);
     }
+
 
     async function pullCloudSync(options = {}) {
       if (options.saveForm !== false) saveSyncSettings();
@@ -1796,6 +2335,7 @@
       updateSyncUi(`已下載：${new Date().toLocaleTimeString("zh-TW")}`);
     }
 
+
     function scheduleCloudPush() {
       if (!state.sync.enabled || !state.sync.autoPushOnChange) return;
       window.clearTimeout(scheduleCloudPush.timer);
@@ -1803,6 +2343,7 @@
         pushCloudSync(false).catch((error) => updateSyncUi(`自動同步失敗：${error.message}`));
       }, 900);
     }
+
 
     async function runSyncAction(action) {
       try {
@@ -1812,6 +2353,7 @@
         showToast("同步失敗");
       }
     }
+
 
     function normalizeExternalGame(item) {
       return {
@@ -1826,18 +2368,22 @@
       };
     }
 
+
     function normalizeGameName(value) {
       return String(value || "").trim().toLowerCase().replace(/\s+/g, "");
     }
+
 
     function sameGameName(left, right) {
       return normalizeGameName(left) === normalizeGameName(right);
     }
 
+
     function findGameByExternal(external) {
       const names = [external.name, ...(external.aliases || [])].filter(Boolean);
       return state.games.find((game) => names.some((name) => sameGameName(game.name, name)));
     }
+
 
     async function importGameData() {
       const status = $("#gameDataStatus");
@@ -1847,6 +2393,7 @@
       const data = await response.json();
       const incoming = Array.isArray(data.games) ? data.games.map(normalizeExternalGame) : [];
       if (!incoming.length) throw new Error("game-data.json 裡沒有 games 資料。");
+
 
       let matched = 0;
       const missing = [];
@@ -1859,7 +2406,7 @@
         }
         game.versionName = external.versionName;
         game.versionEndDate = external.versionEndDate;
-        game.bannerName = external.bannerName;
+        if (external.bannerName && !external.bannerName.includes("請填")) game.bannerName = external.bannerName;
         game.bannerEndDate = external.bannerEndDate;
         game.bannerEndTime = external.bannerEndTime;
         game.versionEventDone = external.versionEventDone;
@@ -1867,16 +2414,19 @@
         matched += 1;
       });
 
+
       if (matched > 0) {
         save();
         render();
       }
+
 
       const updatedAt = data.updatedAt ? `資料時間：${data.updatedAt}。` : "";
       const missingText = missing.length ? ` 找不到同名遊戲：${missing.join("、")}。` : "";
       status.textContent = `已套用 ${matched} 款遊戲。${updatedAt}${missingText}`;
       showToast(`已匯入 ${matched} 款遊戲資料`);
     }
+
 
     function autoPullIfConfigured() {
       if (!state.sync.enabled || !state.sync.gistId || state.sync.autoPullOnLoad === false) return;
@@ -1886,9 +2436,11 @@
       });
     }
 
+
     function setDone(gameId, type, done) {
       const game = state.games.find((item) => item.id === gameId);
       if (!game) return;
+
 
       game.completedDates = Array.isArray(game.completedDates) ? game.completedDates : [];
       const key = completionKey(game, type);
@@ -1900,9 +2452,11 @@
         game.completedDates = game.completedDates.filter((date) => date !== key && date !== legacyKey);
       }
 
+
       save();
       render();
     }
+
 
     function showToast(message) {
       const toast = $("#toast");
@@ -1912,6 +2466,7 @@
       showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 1800);
     }
 
+
     function escapeHtml(value) {
       return value
         .replaceAll("&", "&amp;")
@@ -1920,6 +2475,7 @@
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
     }
+
 
     function renderTaskSection(game, type) {
       if (!hasTask(game, type)) return "";
@@ -1946,6 +2502,7 @@
       `;
     }
 
+
     function render() {
       const list = $("#gameList");
       updateQuickFilterButtons();
@@ -1957,6 +2514,7 @@
       const weeklyTodoGames = activeGames.filter(isWeeklyTodo);
       const activityTodoGames = activeGames.filter(isActivityTodo);
 
+
       updateHeroProgress(activeGames);
       setStat("todoCount", todoGames.length, "未完成");
       setStat("dailyTodoCount", dailyTodoGames.length, "每日");
@@ -1965,6 +2523,7 @@
       setStat("doneCount", doneGames.length, "已完成");
       setStat("totalCount", activeGames.length, restingGames.length ? `全部 / 休眠 ${restingGames.length}` : "全部");
       $("#doneCount").classList.toggle("all-clear", activeGames.length > 0 && todoGames.length === 0);
+
 
       let visibleGames = activeGames;
       if (state.filter === "todo") visibleGames = todoGames;
@@ -1977,21 +2536,24 @@
       if (state.filter === "all") visibleGames = state.games;
       if (state.filter === "done") visibleGames = doneGames;
 
+
       if (visibleGames.length === 0) {
         list.innerHTML = `<div class="empty">${state.games.length === 0 ? "還沒有遊戲，先新增一個吧。" : "這個分類目前沒有項目。"}</div>`;
         return;
       }
 
+
       list.innerHTML = visibleGames.map((game) => {
         const done = isGameDone(game);
         return `
-          <article class="game-row ${done ? "done-row" : ""} ${game.isResting ? "resting-row" : ""}" draggable="true" data-id="${game.id}">
+          <article class="game-row ${done ? "done-row" : ""} ${done && game.expandedDone ? "expanded-done" : ""} ${game.isResting ? "resting-row" : ""}" draggable="true" data-id="${game.id}">
             <button class="drag-handle" type="button" title="拖曳排序" aria-label="拖曳排序" data-action="drag-handle">⋮⋮</button>
             <div>
               <div class="game-title-wrap">
-                <span class="game-badge" aria-hidden="true">${escapeHtml(game.name.slice(0, 1) || "?")}</span>
+                ${gameIconMarkup(game)}
                 <div class="game-name">${escapeHtml(game.name)}</div>
               </div>
+              ${urgencyBadge(game) ? `<div class="urgency-badge">${urgencyBadge(game)}</div>` : ""}
               <div class="completion-line">✓ ${escapeHtml(game.name)} 今日完成</div>
               <div class="task-sections">
                 ${renderTaskSection(game, "daily")}
@@ -2017,6 +2579,7 @@
               <button class="icon-button" type="button" title="上移" data-action="move-up" data-id="${game.id}">↑</button>
               <button class="icon-button" type="button" title="下移" data-action="move-down" data-id="${game.id}">↓</button>
               <button class="icon-button" type="button" title="編輯" data-action="edit" data-id="${game.id}">✎</button>
+              <button class="icon-button" type="button" title="${game.expandedDone ? "收合完成任務" : "展開完成任務"}" data-action="toggle-done-details" data-id="${game.id}">${game.expandedDone ? "收" : "詳"}</button>
               <button class="icon-button" type="button" title="${game.isResting ? "取消休眠" : "休眠"}" data-action="toggle-resting" data-id="${game.id}">${game.isResting ? "☀" : "休"}</button>
               <button class="icon-button delete" type="button" title="刪除" data-action="delete" data-id="${game.id}">×</button>
             </div>
@@ -2024,6 +2587,7 @@
         `;
       }).join("");
     }
+
 
     function resetForm() {
       $("#editingId").value = "";
@@ -2039,6 +2603,9 @@
       $("#bannerName").value = "";
       $("#bannerEndDate").value = "";
       $("#bannerEndTime").value = "23:59";
+      $("#gameIconUrl").value = "";
+      $("#gameIconFile").value = "";
+      updateIconPreview("");
       $("#dailyTasks").value = "";
       $("#weeklyTasks").value = "";
       $("#formTitle").textContent = "新增遊戲";
@@ -2046,7 +2613,9 @@
       $("#cancelEditButton").hidden = true;
       const advanced = document.querySelector(".advanced-settings");
       if (advanced) advanced.open = false;
+      setFormOpen(false);
     }
+
 
     $("#gameForm").addEventListener("submit", (event) => {
       event.preventDefault();
@@ -2065,7 +2634,9 @@
       const bannerEndTime = parseResetTime($("#bannerEndTime").value || "23:59").value;
       const dailyTasks = $("#dailyTasks").value.trim();
       const weeklyTasks = $("#weeklyTasks").value.trim();
+      const iconUrl = $("#gameIconUrl").value;
       if (!name) return;
+
 
       if (id) {
         const game = state.games.find((item) => item.id === id);
@@ -2075,6 +2646,7 @@
           game.hasMonthlyCard = hasMonthlyCard;
           game.hasBattlePass = hasBattlePass;
           game.isResting = isResting;
+          game.iconUrl = iconUrl;
           game.monthlyCardEndDate = monthlyCardEndDate;
           game.versionName = versionName;
           game.versionEndDate = versionEndDate;
@@ -2095,6 +2667,7 @@
           hasMonthlyCard,
           hasBattlePass,
           isResting,
+          iconUrl,
           monthlyCardEndDate,
           versionName,
           versionEndDate,
@@ -2110,32 +2683,39 @@
         showToast("已加入遊戲");
       }
 
+
       save();
       resetForm();
       render();
     });
+
 
     $("#gameList").addEventListener("click", (event) => {
       const target = event.target.closest("[data-action]");
       if (!target) return;
       if (target.dataset.action === "drag-handle") return;
 
+
       const id = target.dataset.id;
       const action = target.dataset.action;
       const game = state.games.find((item) => item.id === id);
       if (!game) return;
 
+
       if (action === "toggle") {
         setDone(id, "daily", target.checked);
       }
+
 
       if (action === "toggle-daily") {
         setDone(id, "daily", target.checked);
       }
 
+
       if (action === "toggle-weekly") {
         setDone(id, "weekly", target.checked);
       }
+
 
       if (action === "toggle-activity") {
         game.versionEventDone = target.checked;
@@ -2144,12 +2724,22 @@
         showToast(target.checked ? "活動標記為已完成" : "活動標記為未完成");
       }
 
+
+      if (action === "toggle-done-details") {
+        game.expandedDone = !game.expandedDone;
+        save();
+        render();
+        return;
+      }
+
+
       if (action === "toggle-resting") {
         game.isResting = !game.isResting;
         save();
         render();
         showToast(game.isResting ? "已設為休眠，不會出現在待辦" : "已取消休眠");
       }
+
 
       if (action === "move-up" || action === "move-down") {
         const index = state.games.findIndex((item) => item.id === id);
@@ -2161,6 +2751,7 @@
         render();
         showToast("已更新排序");
       }
+
 
       if (action === "edit") {
         $("#editingId").value = game.id;
@@ -2176,6 +2767,9 @@
         $("#bannerName").value = game.bannerName || "";
         $("#bannerEndDate").value = game.bannerEndDate || "";
         $("#bannerEndTime").value = parseResetTime(game.bannerEndTime || "23:59").value;
+        $("#gameIconUrl").value = game.iconUrl || "";
+        $("#gameIconFile").value = "";
+        updateIconPreview(game.iconUrl || "");
         $("#dailyTasks").value = game.dailyTasks || "";
         $("#weeklyTasks").value = game.weeklyTasks || "";
         $("#formTitle").textContent = "編輯遊戲";
@@ -2183,8 +2777,10 @@
         $("#cancelEditButton").hidden = false;
         const advanced = document.querySelector(".advanced-settings");
         if (advanced) advanced.open = true;
+        setFormOpen(true);
         $("#gameName").focus();
       }
+
 
       if (action === "delete") {
         if (!confirm(`確定刪除「${game.name}」嗎？`)) return;
@@ -2196,12 +2792,14 @@
       }
     });
 
+
     $("#gameList").addEventListener("dragstart", (event) => {
       const row = event.target.closest(".game-row");
       if (!row) return;
       event.dataTransfer.setData("text/plain", row.dataset.id);
       event.dataTransfer.effectAllowed = "move";
     });
+
 
     $("#gameList").addEventListener("dragover", (event) => {
       const row = event.target.closest(".game-row");
@@ -2210,10 +2808,12 @@
       row.classList.add("drag-over");
     });
 
+
     $("#gameList").addEventListener("dragleave", (event) => {
       const row = event.target.closest(".game-row");
       if (row) row.classList.remove("drag-over");
     });
+
 
     $("#gameList").addEventListener("drop", (event) => {
       const row = event.target.closest(".game-row");
@@ -2224,9 +2824,11 @@
       const targetId = row.dataset.id;
       if (!draggedId || draggedId === targetId) return;
 
+
       const from = state.games.findIndex((game) => game.id === draggedId);
       const to = state.games.findIndex((game) => game.id === targetId);
       if (from < 0 || to < 0) return;
+
 
       const [moved] = state.games.splice(from, 1);
       state.games.splice(to, 0, moved);
@@ -2235,22 +2837,27 @@
       showToast("已更新排序");
     });
 
+
     $("#gameList").addEventListener("dragend", () => {
       document.querySelectorAll(".drag-over").forEach((item) => item.classList.remove("drag-over"));
     });
+
 
     function setFilter(value) {
       state.filter = value;
       render();
     }
 
+
     $("#filterMode").addEventListener("change", (event) => {
       setFilter(event.target.value);
     });
 
+
     document.querySelectorAll("[data-filter]").forEach((button) => {
       button.addEventListener("click", () => setFilter(button.dataset.filter));
     });
+
 
     document.querySelectorAll("[data-scroll-target]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -2261,6 +2868,7 @@
       });
     });
 
+
     $("#importGameDataButton").addEventListener("click", () => {
       importGameData().catch((error) => {
         $("#gameDataStatus").textContent = `匯入失敗：${error.message}`;
@@ -2268,9 +2876,11 @@
       });
     });
 
+
     $("#themeSelect").addEventListener("change", (event) => {
       saveTheme(event.target.value);
     });
+
 
     $("#applyCustomThemeButton").addEventListener("click", () => {
       const value = $("#customThemeUrl").value.trim();
@@ -2278,9 +2888,25 @@
         showToast("請先貼上圖片網址，或上傳本機圖片");
         return;
       }
+      saveCustomThemeOptions({
+        visibility: $("#customThemeVisibility").value,
+        tone: $("#customThemeTone").value
+      });
       saveCustomThemeImage(value);
       showToast("已套用自訂背景");
     });
+
+
+    $("#customThemeVisibility").addEventListener("input", (event) => {
+      saveCustomThemeOptions({ visibility: event.target.value });
+    });
+
+
+    $("#customThemeTone").addEventListener("change", (event) => {
+      saveCustomThemeOptions({ tone: event.target.value });
+      showToast("已更新自訂主色");
+    });
+
 
     $("#customThemeFile").addEventListener("change", (event) => {
       const file = event.target.files?.[0];
@@ -2296,12 +2922,17 @@
       }
       const reader = new FileReader();
       reader.addEventListener("load", () => {
+        saveCustomThemeOptions({
+          visibility: $("#customThemeVisibility").value,
+          tone: $("#customThemeTone").value
+        });
         saveCustomThemeImage(String(reader.result || ""));
         $("#customThemeUrl").value = "";
         showToast("已套用上傳圖片");
       });
       reader.readAsDataURL(file);
     });
+
 
     $("#clearCustomThemeButton").addEventListener("click", () => {
       saveCustomThemeImage("");
@@ -2311,13 +2942,48 @@
       showToast("已清除背景圖片");
     });
 
+
     $("#buyMonthlyCardButton").addEventListener("click", () => {
       $("#hasMonthlyCard").checked = true;
       $("#monthlyCardEndDate").value = addDaysToToday(30);
       showToast("已填入月卡到期日");
     });
 
+
+    $("#formToggleButton").addEventListener("click", () => setFormOpen(!state.formOpen));
+
+
+    $("#collapseFormButton").addEventListener("click", () => {
+      if ($("#editingId").value && !confirm("正在編輯遊戲，要取消並收合嗎？")) return;
+      resetForm();
+    });
+
+
+    $("#gameIconFile").addEventListener("change", (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        showToast("請選擇圖片檔");
+        return;
+      }
+      if (file.size > 600 * 1024) {
+        showToast("Icon 建議小於 600KB");
+        event.target.value = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        const value = String(reader.result || "");
+        $("#gameIconUrl").value = value;
+        updateIconPreview(value);
+        showToast("已套用遊戲 Icon");
+      });
+      reader.readAsDataURL(file);
+    });
+
+
     $("#cancelEditButton").addEventListener("click", resetForm);
+
 
     $("#resetCurrentButton").addEventListener("click", () => {
       state.games.forEach((game) => {
@@ -2334,6 +3000,7 @@
       showToast("已重置目前勾選");
     });
 
+
     $("#clearAllButton").addEventListener("click", () => {
       if (!confirm("確定要清空全部遊戲資料嗎？這個動作不能復原。")) return;
       state.games = [];
@@ -2342,6 +3009,7 @@
       render();
       showToast("已清空資料");
     });
+
 
     $("#copyTodoButton").addEventListener("click", async () => {
       const todoGames = filteredTodoGames();
@@ -2363,6 +3031,7 @@
         }).join("\n")}`
         : "目前的遊戲任務都完成了。";
 
+
       try {
         await navigator.clipboard.writeText(text);
         showToast("已複製未完成清單");
@@ -2370,6 +3039,7 @@
         prompt("複製這段文字：", text);
       }
     });
+
 
     $("#saveSyncButton").addEventListener("click", () => {
       saveSyncSettings();
@@ -2379,19 +3049,23 @@
       }
     });
 
+
     $("#pushSyncButton").addEventListener("click", () => {
       saveSyncSettings();
       runSyncAction(() => pushCloudSync(true));
     });
 
+
     $("#pullSyncButton").addEventListener("click", () => {
       runSyncAction(pullCloudSync);
     });
+
 
     refreshCurrentDate();
     loadTheme();
     load();
     loadSyncSettings();
+    updateFormOpen();
     updateAppVersionUi();
     updateSyncUi();
     render();
