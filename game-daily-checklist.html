@@ -1291,7 +1291,7 @@
             <label for="monthlyCardEndDate">月卡到期日</label>
             <div class="field-row">
               <input id="monthlyCardEndDate" type="date">
-              <button class="secondary" type="button" id="buyMonthlyCardButton">今天購買 +30 天</button>
+              <button class="secondary" type="button" id="buyMonthlyCardButton">續月卡 +30 天</button>
             </div>
           </div>
           <div>
@@ -1487,7 +1487,7 @@
     const THEME_VISIBILITY_KEY = "game-daily-checklist-theme-visibility-v1";
     const THEME_TONE_KEY = "game-daily-checklist-theme-tone-v1";
     const SYNC_FILE = "game-daily-checklist-data.json";
-    const APP_VERSION = "v1.21.0";
+    const APP_VERSION = "v1.22.0";
     const $ = (selector) => document.querySelector(selector);
 
 
@@ -1722,6 +1722,15 @@
       const date = new Date(`${state.today}T00:00:00`);
       date.setDate(date.getDate() + days);
       return date.toLocaleDateString("sv-SE");
+    }
+
+
+    function addDaysToMonthlyCard(days) {
+      const today = new Date(`${state.today}T00:00:00`);
+      const currentEndDate = new Date(`${$("#monthlyCardEndDate").value}T00:00:00`);
+      const base = !Number.isNaN(currentEndDate.getTime()) && currentEndDate > today ? currentEndDate : today;
+      base.setDate(base.getDate() + days);
+      return base.toLocaleDateString("sv-SE");
     }
 
 
@@ -2945,8 +2954,8 @@
 
     $("#buyMonthlyCardButton").addEventListener("click", () => {
       $("#hasMonthlyCard").checked = true;
-      $("#monthlyCardEndDate").value = addDaysToToday(30);
-      showToast("已填入月卡到期日");
+      $("#monthlyCardEndDate").value = addDaysToMonthlyCard(30);
+      showToast("已累加月卡 30 天");
     });
 
 
