@@ -1,0 +1,17 @@
+{
+  "name": "遊戲每日任務（自用）",
+  "short_name": "每日任務",
+  "description": "個人遊戲 Daily Dashboard",
+  "start_url": "./game-daily-checklist.html",
+  "display": "standalone",
+  "background_color": "#101421",
+  "theme_color": "#7ddcff",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
