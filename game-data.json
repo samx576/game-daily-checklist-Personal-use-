@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-02T04:28:40.197Z",
+  "updatedAt": "2026-09-03T04:19:47.773Z",
   "note": "這份資料由 GitHub Actions 自動更新。原神目前嘗試從 BWIKI 卡池計時器抓取。",
   "games": [
     {
@@ -8,11 +8,11 @@
         "Genshin Impact",
         "Genshin"
       ],
-      "versionName": "7.0上半",
+      "versionName": "7.0下半",
       "versionEndDate": "",
-      "bannerName": "7.0上半：阿蕾奇诺 / 奥黛塔 / 琳妮特 / 砂糖 / 阿罗夏 / 赤月之形 / 白湖冬羽 / 弓藏 / 祭礼残章 / 匣里灭辰 / 钟剑 / 西风剑",
-      "bannerEndDate": "2026-09-02",
-      "bannerEndTime": "15:28",
+      "bannerName": "7.0下半：伊涅芙 / 菲林斯 / 爱诺 / 伊安珊 / 蓝砚 / 支离轮光 / 血染荒城 / 绝弦 / 昭心 / 西风长枪 / 西风大剑 / 笛剑",
+      "bannerEndDate": "2026-09-23",
+      "bannerEndTime": "12:19",
       "versionEventDone": false
     },
     {
