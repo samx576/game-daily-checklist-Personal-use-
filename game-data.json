@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-13T06:44:29.578Z",
+  "updatedAt": "2026-10-14T04:48:23.226Z",
   "note": "這份資料由 GitHub Actions 自動更新。原神目前嘗試從 BWIKI 卡池計時器抓取。",
   "games": [
     {
@@ -8,11 +8,11 @@
         "Genshin Impact",
         "Genshin"
       ],
-      "versionName": "7.1上半",
+      "versionName": "7.1下半",
       "versionEndDate": "",
-      "bannerName": "7.1上半：沃雅妮莎 / 薇斯纳 / 重云 / 珐露珊 / 迪奥娜 / 漩流颂歌 / 蝶变 / 匣里灭辰 / 西风大剑 / 柔风游弦 / 凝雪沉心 / 新枝",
-      "bannerEndDate": "2026-10-14",
-      "bannerEndTime": "13:44",
+      "bannerName": "7.1下半：爱可菲 / 丝柯克 / 香韵奏者 / 苍耀",
+      "bannerEndDate": "2026-11-04",
+      "bannerEndTime": "08:48",
       "versionEventDone": false
     },
     {
