@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-14T04:48:23.226Z",
+  "updatedAt": "2026-10-15T04:32:52.139Z",
   "note": "這份資料由 GitHub Actions 自動更新。原神目前嘗試從 BWIKI 卡池計時器抓取。",
   "games": [
     {
@@ -12,7 +12,7 @@
       "versionEndDate": "",
       "bannerName": "7.1下半：爱可菲 / 丝柯克 / 香韵奏者 / 苍耀",
       "bannerEndDate": "2026-11-04",
-      "bannerEndTime": "08:48",
+      "bannerEndTime": "08:32",
       "versionEventDone": false
     },
     {
