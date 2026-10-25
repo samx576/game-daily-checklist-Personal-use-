@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-24T04:31:13.240Z",
+  "updatedAt": "2026-10-25T04:35:46.889Z",
   "note": "這份資料由 GitHub Actions 自動更新。原神目前嘗試從 BWIKI 卡池計時器抓取。",
   "games": [
     {
@@ -10,9 +10,9 @@
       ],
       "versionName": "7.1下半",
       "versionEndDate": "",
-      "bannerName": "7.1下半：丝柯克 / 爱可菲 / 塔利雅 / 米卡 / 坎蒂丝 / 香韵奏者 / 苍耀 / 祭礼弓 / 流浪乐章 / 西风长枪 / 祭礼大剑 / 弥坚骨",
+      "bannerName": "7.1下半：爱可菲 / 丝柯克 / 塔利雅 / 米卡 / 坎蒂丝 / 香韵奏者 / 苍耀 / 祭礼弓 / 流浪乐章 / 西风长枪 / 祭礼大剑",
       "bannerEndDate": "2026-11-04",
-      "bannerEndTime": "09:31",
+      "bannerEndTime": "09:35",
       "versionEventDone": false
     },
     {
