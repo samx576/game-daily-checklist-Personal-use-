@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-04T06:10:27.179Z",
+  "updatedAt": "2026-11-05T06:39:20.557Z",
   "note": "這份資料由 GitHub Actions 自動更新。原神目前嘗試從 BWIKI 卡池計時器抓取。",
   "games": [
     {
@@ -8,11 +8,11 @@
         "Genshin Impact",
         "Genshin"
       ],
-      "versionName": "7.1下半",
+      "versionName": "7.2上半",
       "versionEndDate": "",
-      "bannerName": "7.1下半：爱可菲 / 丝柯克 / 塔利雅 / 米卡 / 坎蒂丝 / 香韵奏者 / 苍耀 / 祭礼弓 / 流浪乐章 / 西风长枪 / 祭礼大剑",
-      "bannerEndDate": "2026-11-04",
-      "bannerEndTime": "10:42",
+      "bannerName": "7.2上半：芙宁娜 / 米提亚 / 罗莎莉亚 / 夏洛蒂 / 瓦列里 / 静水流涌之辉 / 秘星典谕 / 弓藏 / 雨裁 / 霜辰 / 勘探钻机 / 船坞长剑",
+      "bannerEndDate": "2026-11-25",
+      "bannerEndTime": "16:39",
       "versionEventDone": false
     },
     {
