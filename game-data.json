@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-05T06:39:20.557Z",
+  "updatedAt": "2026-11-06T06:35:05.900Z",
   "note": "這份資料由 GitHub Actions 自動更新。原神目前嘗試從 BWIKI 卡池計時器抓取。",
   "games": [
     {
@@ -12,7 +12,7 @@
       "versionEndDate": "",
       "bannerName": "7.2上半：芙宁娜 / 米提亚 / 罗莎莉亚 / 夏洛蒂 / 瓦列里 / 静水流涌之辉 / 秘星典谕 / 弓藏 / 雨裁 / 霜辰 / 勘探钻机 / 船坞长剑",
       "bannerEndDate": "2026-11-25",
-      "bannerEndTime": "16:39",
+      "bannerEndTime": "17:35",
       "versionEventDone": false
     },
     {
