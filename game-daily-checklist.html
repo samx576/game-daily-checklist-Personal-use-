@@ -1209,6 +1209,61 @@
         grid-column: 2;
       }
     }
+    main { width: min(1120px, calc(100% - 40px)); padding-top: 32px; }
+    h1 { font-size: 26px; }
+    .subtitle { font-size: 13px; }
+    .layout { display: block; }
+    .quest-panel { background: transparent; border: 0; box-shadow: none; }
+    .today-progress-panel { padding: 22px; margin: 22px 0; border-top: 3px solid var(--accent); }
+    .progress-title { font-size: 19px; }
+    .progress-percent { font-size: 28px; }
+    .completion-message:empty { display: none; }
+    .toolbar { padding: 0 0 16px; border: 0; }
+    .summary { gap: 7px; }
+    .pill { background: var(--panel); min-width: 66px; }
+    .quick-filters { padding: 0 0 18px; border: 0; }
+    .game-list { gap: 14px; }
+    .game-row { border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 8px; padding: 20px 18px; grid-template-columns: auto minmax(0, 1fr) auto; box-shadow: 0 5px 18px rgba(0,0,0,.08); }
+    .game-name { font-size: 18px; margin: 0; }
+    .game-badge { width: 36px; height: 36px; }
+    .task-sections { grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); margin-top: 14px; }
+    .task-section { background: color-mix(in srgb, var(--panel) 80%, transparent); padding: 12px; }
+    .drag-handle { width: 24px; border: 0; background: transparent; opacity: .55; }
+    .game-details { margin-top: 12px; }
+    .game-details > summary { cursor: pointer; color: var(--muted); font-size: 12px; width: fit-content; padding: 6px 0; }
+    .row-actions { position: relative; display: block; }
+    .row-actions > summary { list-style: none; cursor: pointer; }
+    .row-actions > summary::-webkit-details-marker { display: none; }
+    .action-menu { position: absolute; right: 0; top: 42px; z-index: 5; display: grid; grid-template-columns: repeat(3, 36px); gap: 8px; padding: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
+    .sync-indicator { font-size: 12px; color: var(--muted); padding: 8px 12px; background: var(--panel); border: 1px solid var(--line); }
+    .settings-dialog { width: min(520px, calc(100% - 24px)); max-height: calc(100dvh - 40px); padding: 0; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 24px 80px rgba(0,0,0,.4); }
+    .settings-dialog::backdrop { background: rgba(8,12,22,.5); backdrop-filter: blur(4px); }
+    .settings-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--bg); border-bottom: 1px solid var(--line); }
+    .settings-head h2 { margin: 0; font-size: 18px; }
+    .settings-dialog .side-panel { border: 0; box-shadow: none; }
+    .mobile-nav { display: none; }
+    button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    input[type="range"] { accent-color: var(--accent); padding-inline: 0; }
+    .pill.done.all-clear { animation: completePulse 360ms ease; }
+    @media (max-width: 820px) {
+      main { width: calc(100% - 24px); padding: 18px 0 90px; }
+      header { display: flex; flex-wrap: wrap; gap: 12px; }
+      h1 { font-size: 22px; }
+      .date-box { width: auto; min-width: 0; text-align: left; padding: 8px 12px; }
+      .today-progress-panel { padding: 16px; margin: 16px 0; }
+      .game-row { padding: 14px 10px; gap: 8px; }
+      .row-actions { grid-column: auto; }
+      .game-name { font-size: 16px; }
+      .task-section-head { flex-wrap: wrap; }
+      .summary { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
+      .pill { min-width: 0; }
+      .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; display: flex; justify-content: space-around; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line); }
+      .mobile-nav button { background: transparent; color: var(--muted); font-size: 13px; }
+      .mobile-nav button.active { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg)); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
   </style>
 </head>
 <body>
@@ -1218,8 +1273,10 @@
         <h1>遊戲每日任務（自用）</h1>
         <p class="subtitle">勾一下今天解完的遊戲，剩下沒解的一眼看清楚。</p>
         <div class="top-nav" aria-label="主要區塊">
-          <button class="nav-tab active" type="button" data-scroll-target="gameList">Quest Log</button>
-          <button class="nav-tab" type="button" data-scroll-target="gameDataStatus">Banner Tracker</button>
+          <button class="nav-tab active" type="button" data-filter="today">今日任務</button>
+          <button class="nav-tab" type="button" id="quickAddButton">＋ 新增遊戲</button>
+          <button class="nav-tab" type="button" id="settingsButton">設定</button>
+          <button class="sync-indicator" type="button" id="syncIndicator">同步狀態</button>
         </div>
       </div>
       <div class="date-box">
@@ -1243,6 +1300,8 @@
 
 
     <div class="layout">
+      <dialog class="settings-dialog" id="settingsDialog">
+      <div class="settings-head"><h2>管理與設定</h2><button class="icon-button" type="button" id="closeSettingsButton" aria-label="關閉設定" title="關閉設定">×</button></div>
       <aside class="panel side-panel">
         <button class="form-toggle" type="button" id="formToggleButton">
           <span>＋ 新增遊戲</span>
@@ -1440,9 +1499,10 @@
         </div>
         <div class="app-version" id="appVersionLabel"></div>
       </aside>
+      </dialog>
 
 
-      <section>
+      <section class="quest-panel" aria-label="今日任務">
         <div class="toolbar">
           <div class="summary">
             <button class="pill todo" type="button" id="todoCount" data-filter="todo"><strong>0</strong><span>未完成</span></button>
@@ -1479,6 +1539,12 @@
   </main>
 
 
+  <nav class="mobile-nav" aria-label="手機導覽">
+    <button type="button" data-filter="today">今日</button>
+    <button type="button" data-filter="daily-todo">每日</button>
+    <button type="button" data-filter="weekly-todo">每週</button>
+    <button type="button" id="mobileSettingsButton">設定</button>
+  </nav>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 
@@ -1490,7 +1556,7 @@
     const THEME_VISIBILITY_KEY = "game-daily-checklist-theme-visibility-v1";
     const THEME_TONE_KEY = "game-daily-checklist-theme-tone-v1";
     const SYNC_FILE = "game-daily-checklist-data.json";
-    const APP_VERSION = "v1.24.0";
+    const APP_VERSION = "v1.25.0";
     let syncQueue = Promise.resolve();
     let localRevision = 0;
     const DIRTY_KEY = "game-daily-checklist-unsynced-v1";
@@ -2007,6 +2073,7 @@
 
     function setFormOpen(open) {
       state.formOpen = open;
+      if (open && !$("#settingsDialog").open) $("#settingsDialog").showModal();
       updateFormOpen();
     }
 
@@ -2235,6 +2302,12 @@
         ? `同步已設定${state.sync.gistId ? `，Gist ID：${state.sync.gistId}` : "，尚未建立 Gist"}。${last ? ` ${last}` : ""}`
         : "尚未設定同步。");
       $("#syncStatus").textContent = status;
+      const indicator = $("#syncIndicator");
+      indicator.textContent = message?.includes("失敗") ? "同步失敗" :
+        message?.includes("正在") ? "同步中…" :
+        localStorage.getItem(DIRTY_KEY) ? "待上傳" :
+        state.sync.enabled ? "同步已設定" : "未設定同步";
+      indicator.title = status;
     }
 
 
@@ -2590,6 +2663,7 @@
                 ${renderTaskSection(game, "weekly")}
                 ${hasAnyTask(game) ? "" : `<div class="tasks">沒有填任務內容</div>`}
               </div>
+              <details class="game-details"><summary>遊戲詳情與本週紀錄</summary>
               ${infoLines(game)}
               ${tracksActivity(game) ? `
                 <label class="quick-check">
@@ -2598,6 +2672,7 @@
                 </label>
               ` : ""}
               ${weeklyDailyRecord(game)}
+              </details>
               <div class="meta">
                 <span class="tag">重置 ${parseResetTime(game.resetTime).value}</span>
                 ${pendingLabels(game).map((tag) => `<span class="tag">${tag}</span>`).join("")}
@@ -2605,14 +2680,14 @@
                 ${game.updatedAt ? `<span class="tag">更新：${escapeHtml(game.updatedAt)}</span>` : ""}
               </div>
             </div>
-            <div class="row-actions">
+            <details class="row-actions"><summary class="icon-button" aria-label="管理遊戲" title="管理遊戲">⋯</summary><div class="action-menu">
               <button class="icon-button" type="button" title="上移" data-action="move-up" data-id="${game.id}">↑</button>
               <button class="icon-button" type="button" title="下移" data-action="move-down" data-id="${game.id}">↓</button>
               <button class="icon-button" type="button" title="編輯" data-action="edit" data-id="${game.id}">✎</button>
               <button class="icon-button" type="button" title="${game.expandedDone ? "收合完成任務" : "展開完成任務"}" data-action="toggle-done-details" data-id="${game.id}">${game.expandedDone ? "收" : "詳"}</button>
               <button class="icon-button" type="button" title="${game.isResting ? "取消休眠" : "休眠"}" data-action="toggle-resting" data-id="${game.id}">${game.isResting ? "☀" : "休"}</button>
               <button class="icon-button delete" type="button" title="刪除" data-action="delete" data-id="${game.id}">×</button>
-            </div>
+            </div></details>
           </article>
         `;
       }).join("");
@@ -3090,6 +3165,19 @@
       runSyncAction(pullCloudSync);
     });
 
+
+    $("#settingsButton").addEventListener("click", () => $("#settingsDialog").showModal());
+    $("#mobileSettingsButton").addEventListener("click", () => $("#settingsDialog").showModal());
+    $("#syncIndicator").addEventListener("click", () => {
+      $("#settingsDialog").showModal();
+      $("#syncStatus").scrollIntoView({ block: "center" });
+    });
+    $("#closeSettingsButton").addEventListener("click", () => $("#settingsDialog").close());
+    $("#quickAddButton").addEventListener("click", () => {
+      resetForm();
+      setFormOpen(true);
+      $("#gameName").focus();
+    });
 
     refreshCurrentDate();
     loadTheme();
