@@ -1490,7 +1490,16 @@
     const THEME_VISIBILITY_KEY = "game-daily-checklist-theme-visibility-v1";
     const THEME_TONE_KEY = "game-daily-checklist-theme-tone-v1";
     const SYNC_FILE = "game-daily-checklist-data.json";
-    const APP_VERSION = "v1.23.0";
+    const APP_VERSION = "v1.24.0";
+    let syncQueue = Promise.resolve();
+    let localRevision = 0;
+    const DIRTY_KEY = "game-daily-checklist-unsynced-v1";
+
+    function queueSync(action) {
+      const next = syncQueue.then(action);
+      syncQueue = next.catch(() => {});
+      return next;
+    }
     const $ = (selector) => document.querySelector(selector);
 
 
@@ -1943,8 +1952,8 @@
       const bannerDays = game.bannerEndDate ? Number(daysUntilNumber(game.bannerEndDate)) : Infinity;
       const versionDays = game.versionEndDate ? Number(daysUntilNumber(game.versionEndDate)) : Infinity;
       const minDays = Math.min(bannerDays, versionDays);
-      if (minDays <= 1) return 50;
-      if (minDays <= 3) return 40;
+      if (minDays >= 0 && minDays <= 1) return 50;
+      if (minDays >= 0 && minDays <= 3) return 40;
 
       const reset = parseResetTime(game.resetTime);
       const now = new Date();
@@ -1963,8 +1972,8 @@
       const bannerDays = game.bannerEndDate ? Number(daysUntilNumber(game.bannerEndDate)) : Infinity;
       const versionDays = game.versionEndDate ? Number(daysUntilNumber(game.versionEndDate)) : Infinity;
       const minDays = Math.min(bannerDays, versionDays);
-      if (minDays <= 1) return "🔥 活動或卡池剩 1 天內";
-      if (minDays <= 3) return "⚠️ 活動或卡池快結束";
+      if (minDays >= 0 && minDays <= 1) return "🔥 活動或卡池剩 1 天內";
+      if (minDays >= 0 && minDays <= 3) return "⚠️ 活動或卡池快結束";
 
       const reset = parseResetTime(game.resetTime);
       const now = new Date();
@@ -2131,26 +2140,12 @@
       } catch {
         state.games = [];
       }
-      clearGenshinBannerOnce();
-    }
-
-
-    function clearGenshinBannerOnce() {
-      const key = "game-daily-checklist-clear-genshin-banner-v1";
-      if (localStorage.getItem(key)) return;
-      const genshin = state.games.find((game) => sameGameName(game.name, "原神") || sameGameName(game.name, "Genshin Impact"));
-      if (genshin) {
-        genshin.bannerName = "請填目前角色卡池";
-        genshin.bannerEndDate = "";
-        genshin.bannerEndTime = "17:59";
-        genshin.updatedAt = state.today;
-        saveLocalOnly();
-      }
-      localStorage.setItem(key, "done");
     }
 
 
     function save() {
+      localRevision += 1;
+      localStorage.setItem(DIRTY_KEY, "true");
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ games: state.games }));
       scheduleCloudPush();
     }
@@ -2281,7 +2276,7 @@
     function isRemoteNewer(remoteUpdatedAt) {
       if (!remoteUpdatedAt) return false;
       const known = state.sync.lastRemoteUpdatedAt || state.sync.lastPulledAt || state.sync.lastPushedAt || "";
-      return Boolean(known) && new Date(remoteUpdatedAt) > new Date(known);
+      return !known || new Date(remoteUpdatedAt) > new Date(known);
     }
 
 
@@ -2291,7 +2286,11 @@
     }
 
 
-    async function pushCloudSync(showDone = true, options = {}) {
+    function pushCloudSync(showDone = true, options = {}) {
+      return queueSync(() => performCloudPush(showDone, options));
+    }
+
+    async function performCloudPush(showDone, options) {
       if (!state.sync.enabled) return;
       updateSyncUi("正在上傳同步...");
       if (state.sync.gistId && !options.force) {
@@ -2300,6 +2299,8 @@
           throw new Error("雲端資料比較新，請先按「下載雲端」再上傳。");
         }
       }
+      const revision = localRevision;
+      const snapshot = JSON.stringify(state.games);
       const body = {
         description: "Game daily checklist sync data",
         public: false,
@@ -2328,18 +2329,34 @@
 
       state.sync.lastPushedAt = new Date().toISOString();
       state.sync.lastRemoteUpdatedAt = JSON.parse(body.files[SYNC_FILE].content).updatedAt;
+      if (revision === localRevision && snapshot === JSON.stringify(state.games)) {
+        localStorage.removeItem(DIRTY_KEY);
+      }
       persistSyncSettings();
       if (showDone) showToast("已上傳同步");
       updateSyncUi(`同步完成：${new Date().toLocaleTimeString("zh-TW")}`);
     }
 
 
-    async function pullCloudSync(options = {}) {
+    function pullCloudSync(options = {}) {
+      return queueSync(() => performCloudPull(options));
+    }
+
+    async function performCloudPull(options) {
       if (options.saveForm !== false) saveSyncSettings();
       if (!state.sync.gistId) throw new Error("請先填 Gist ID，或先按上傳同步建立一個。");
       updateSyncUi("正在下載雲端資料...");
       const data = await fetchCloudData();
+      if (localStorage.getItem(DIRTY_KEY)) {
+        if (options.silent) {
+          updateSyncUi("本機有尚未上傳的修改，已保留本機資料。");
+          return;
+        }
+        if (!confirm("本機有尚未上傳的修改。下載會取代它們，是否先備份並繼續？")) return;
+        localStorage.setItem("game-daily-checklist-before-download-v1", JSON.stringify(exportData()));
+      }
       importData(data);
+      localStorage.removeItem(DIRTY_KEY);
       state.sync.lastPulledAt = new Date().toISOString();
       state.sync.lastRemoteUpdatedAt = data.updatedAt || state.sync.lastPulledAt;
       persistSyncSettings();
@@ -2416,12 +2433,13 @@
           missing.push(external.name);
           return;
         }
-        game.versionName = external.versionName;
-        game.versionEndDate = external.versionEndDate;
+        if (external.versionName && !external.versionName.includes("請填")) game.versionName = external.versionName;
+        if (external.versionEndDate) game.versionEndDate = external.versionEndDate;
         if (external.bannerName && !external.bannerName.includes("請填")) game.bannerName = external.bannerName;
-        game.bannerEndDate = external.bannerEndDate;
-        game.bannerEndTime = external.bannerEndTime;
-        game.versionEventDone = external.versionEventDone;
+        if (external.bannerEndDate) {
+          game.bannerEndDate = external.bannerEndDate;
+          game.bannerEndTime = external.bannerEndTime;
+        }
         game.updatedAt = state.today;
         matched += 1;
       });
